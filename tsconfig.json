@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/appwrite.js",
+    "lib/server/appwrite.js",
     "lib/context/user.jsx"
   ],
   "exclude": [
