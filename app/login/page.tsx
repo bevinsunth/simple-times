@@ -1,6 +1,6 @@
 'use client'
 
-import { UserProvider } from '@/lib/context/user'
+import { UserProvider } from '../context/user'
 import LoginForm from './components/loginform'
 
 export default function LoginPage() {

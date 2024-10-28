@@ -1,16 +1,7 @@
 import {DaysOfWeek} from "@/types/constants";
 
-export interface Week {
+export interface SheetDate {
     date: Date;
+    localeDateString: string;
     day: typeof DaysOfWeek[number];
   }
-  
-  export interface ColumnProps {
-    title: string;
-  }
-  
-export interface TableProps {
-    title: string;
-    columns: ColumnProps[];
-    rows: React.ReactNode[][];
-}

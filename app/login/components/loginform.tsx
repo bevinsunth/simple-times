@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useUser } from '@/lib/context/user'
+import { useUser } from '../../context/user'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"

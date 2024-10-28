@@ -33,7 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "lib/appwrite.js",
-    "lib/context/user.jsx"
+    "app/context/user.jsx"
   ],
   "exclude": [
     "node_modules"
