@@ -39,13 +39,18 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
 
 
   const createFormSchema = (dates: { date: Date }[]) => {
-    const baseSchema = z.coerce.number({
-      message: "Please enter a valid number"
-    }).positive({
-      message: "Please enter a positive number"
-    }).lte(24, {
-      message: "Please enter a smaller number"
-    })
+    const baseSchema = z.union([
+      z.string().refine((val) => val === '', {
+        message: "Please enter a valid number or leave it empty",
+      }),
+      z.coerce.number({
+        message: "Please enter a valid number"
+      }).positive({
+        message: "Please enter a positive number"
+      }).lte(24, {
+        message: "Please enter a smaller number"
+      })
+    ]);
 
     return z.object(
       dates.reduce((schema, date) => {
@@ -58,10 +63,13 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
   const form = useForm({
     resolver: zodResolver(createFormSchema(activeSheetDates)),
     mode: "all",
-    defaultValues: 
-  
-});
-  console.log("form:", form)
+    //ToDo: Assign values from server
+    values:
+      activeSheetDates.reduce((values, sheetDate) => {
+        values[sheetDate.date.getTime()] = ""; // Ensure default value is set
+        return values;
+      }, {} as Record<string, string>),
+  });
 
   const onSubmit = (data: Record<string, string>) => {
     console.log(data);
