@@ -1,16 +1,13 @@
-import Image from "next/image";
+'use client'
 import TimesheetTable from "@/app/components/timesheet-table";
+
+const today = new Date()
 
 export default function Home() {
   return (
-    <div>
-      <div className="bg-primary flex justify-center">
-        <h1 className="text-4xl text-white">Welcome to Simple Sheet. Your weekly timesheet!</h1>
-        <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-      </div>
-      <div className="bg-inherit flex justify-center">
-        <TimesheetTable />
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-20 py-2">
+      <TimesheetTable weekStart={today} />
     </div>
+
   );
 }

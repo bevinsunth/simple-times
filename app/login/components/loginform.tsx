@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { useUser } from '../../context/user'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -25,19 +24,10 @@ import {
 } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { register } from "module"
+import { signUpWithGithub } from "@/lib/server/auth"
 
-export const description =
-    "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account"
-
-export const iframeHeight = "600px"
-
-export const containerClassName =
-    "w-full h-screen flex items-center justify-center px-4"
 
 export default function LoginForm() {
-
-
-    const user = useUser();
 
     const formSchema = z.object({
         email: z.string().email({
@@ -62,17 +52,6 @@ export default function LoginForm() {
             password: "",
         },
     })
-
-
-    function onCreateAccountSubmit(values: z.infer<typeof formSchema>) {
-        user.register(values.email, values.password)
-    }
-
-    async function onClickGitHubLogin() {
-        console.log("clicked")
-        console.log(user)
-        await user.gitHublogin()
-    }
 
 
     return (
@@ -110,10 +89,10 @@ export default function LoginForm() {
                                             </FormControl>
                                         </div>
                                     </div>
-                                    <Button type="submit" onSubmit={form.handleSubmit(onCreateAccountSubmit)} className="w-full">
+                                    <Button type="submit" className="w-full">
                                         Create an account
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={async () => { await onClickGitHubLogin() }} className="w-full">
+                                    <Button type="button" variant="outline" onClick={async () => { await signUpWithGithub() }} className="w-full">
                                         Sign up with GitHub
                                     </Button>
                                     <div className="mt-4 text-center text-sm">
