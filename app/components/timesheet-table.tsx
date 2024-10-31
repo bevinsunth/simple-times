@@ -1,7 +1,7 @@
 'use client'
 
 import React from "react";
-import { getDatesOfWeek, timestampToDate } from "@/lib/date-utils";
+import { formatDateDDMMYYYY, getDatesOfWeek, timestampStringToDate } from "@/lib/date-utils";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
@@ -14,16 +14,14 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 
-import { useSheetStore } from "@/app/context/sheetStore";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Clock } from "lucide-react";
-import { SheetDate } from "@/types";
+import { createDocument } from "@/lib/server/databases";
 
 
 interface TimesheetTableProps {
@@ -73,6 +71,15 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
 
   const onSubmit = (data: Record<string, string>) => {
     console.log(data);
+    Object.entries(data).forEach(([key, value]: [string, string]) => {
+      const hours: number = parseInt(value);
+      if (value === undefined || hours === 0) {
+        return;
+      }
+      const date = timestampStringToDate(key);
+      console.log(date, hours);
+      createDocument(formatDateDDMMYYYY(date), { hours: value, date: date });
+    });
   }
 
 

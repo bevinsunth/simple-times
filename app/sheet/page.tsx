@@ -1,4 +1,3 @@
-'use client'
 import TimesheetTable from "@/app/components/timesheet-table";
 
 const today = new Date()

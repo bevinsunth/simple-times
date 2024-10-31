@@ -28,11 +28,16 @@ export const getMondayDate = (date: Date) => {
     return new Date(date.setDate(diff));
 };
 
-//Function to convert time to a date
-export const timestampToDate = (timestamp: string) => {
-    return new Date(timestamp);
-};
-
+/**
+ * Convert a string representing a timestamp (from getTime) to a Date object.
+ * @param timestampString - The string representing the timestamp.
+ * @returns The Date object.
+ */
+export function timestampStringToDate(timestampString: string): Date {
+  const timestamp = parseInt(timestampString);
+  return new Date(timestamp);
+}
+    
 export const dateToDayString = (date: Date) => {
     return new Intl.DateTimeFormat(navigator.language, { weekday: 'long' }).format(date);
 }
@@ -42,4 +47,19 @@ export const dateToDayString = (date: Date) => {
 export const dateToLocaleString = (date: Date, locale: string = 'en-AU') => {
     return new Intl.DateTimeFormat(locale).format(date);
 }
+
+/**
+ * Format a date as a string in DDMMYYYY format.
+ * @param date - The date to format.
+ * @returns The formatted date string.
+ */
+export function formatDateDDMMYYYY(date: Date): string {
+  const pad = (num: number) => num.toString().padStart(2, '0');
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // Months are zero-based
+  const year = date.getFullYear().toString();
+  return `${day}${month}${year}`;
+}
+
+
 
