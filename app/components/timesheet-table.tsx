@@ -17,11 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { Clock } from "lucide-react";
-import { createDocument } from "@/lib/server/databases";
+import { addOrUpdateWeeklyTimeSheet } from "@/lib/server/timesheet";
 
 
 interface TimesheetTableProps {
@@ -71,15 +71,16 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
 
   const onSubmit = (data: Record<string, string>) => {
     console.log(data);
-    Object.entries(data).forEach(([key, value]: [string, string]) => {
-      const hours: number = parseInt(value);
-      if (value === undefined || hours === 0) {
-        return;
+    const mondayDateString = formatDateDDMMYYYY(activeSheetDates[0].date)
+
+    const result = Object.entries(data).reduce((acc, [key, value]: [string, string]) => {
+      const hours = parseFloat(value);
+      if (Number.isNaN(hours) && hours > 0) {
+        acc[key] = hours;
       }
-      const date = timestampStringToDate(key);
-      console.log(date, hours);
-      createDocument(formatDateDDMMYYYY(date), { hours: value, date: date });
-    });
+      return acc;
+    }, {} as Record<string, number>);
+    addOrUpdateWeeklyTimeSheet(mondayDateString, result)
   }
 
 
