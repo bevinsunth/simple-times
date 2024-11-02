@@ -1,12 +1,15 @@
-import TimesheetTable from "@/app/components/timesheet-table";
+import React from "react"
+
+import { TimesheetTable } from "@/app/components/timesheet-table"
 
 const today = new Date()
 
-export default function Home() {
+const Sheet = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-20 py-2">
+    <div className="flex min-h-20 flex-col items-center justify-center py-2">
       <TimesheetTable weekStart={today} />
     </div>
-
-  );
+  )
 }
+
+export default Sheet

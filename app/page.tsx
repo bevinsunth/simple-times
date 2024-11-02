@@ -1,17 +1,11 @@
+import { redirect } from "next/navigation"
 
-import TimesheetTable from "@/app/components/timesheet-table";
-import { getLoggedInUser } from "@/lib/server/appwrite";
-import { redirect } from "next/navigation";
-
-const today = new Date()
+import { getLoggedInUser } from "@/lib/server/appwrite"
 
 export default async function Home() {
-
     const user = await getLoggedInUser()
-    if (!user) redirect("/login");
-    if (!user) redirect("/signup");
-
-    redirect("/sheet");
+    if (!user) redirect("/login")
+    else redirect("/sheet")
 
     // return (
     //     < div className="flex flex-col items-center justify-center min-h-20 py-2" >

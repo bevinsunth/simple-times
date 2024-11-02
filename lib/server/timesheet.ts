@@ -1,35 +1,79 @@
 "use server"
 
-import { getDb } from "./databases"
-import { timeEntry } from "@/lib/types/timeEntry.types"
+import { ID, Query } from "node-appwrite"
+
+import type {
+  TimeEntryData,
+  TimeEntryDocument,
+} from "@/lib/types/document-data.types"
+
+import { getDateValue } from "../date-utils"
+import { GetDbOperations } from "./databases"
 
 
-export const addOrUpdateWeeklyTimeSheet = async (startingMondayDateString: string, entries: Record<string, number>) => { 
-    console.log("addOrUpdateWeeklyTimeSheet", startingMondayDateString, entries)
-    //remove any keys with 0 value or undefined
-    for (const key in entries) {
-        if (entries[key] === 0 || isNaN(entries[key])) {
-            delete entries[key];
-        }
-    }
-    const documentData: timeEntry = { date_hours_key_value: entries }
-    const stringifiedData = JSON.stringify(documentData)
+export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
+  // remove any entries with invalid date or hours value
+  const validEntries = entries.filter((entry) => {
+    const isValidDate = !isNaN(entry.date.getTime())
+    const isValidHours = typeof entry.hours === "number" && entry.hours > 0
+    return isValidDate && isValidHours
+  })
 
-    console.log("addOrUpdateWeeklyTimeSheet", startingMondayDateString, stringifiedData)
-    const db = await getDb()
-    //first check if the document exists
-    let existingTimeEntry;
-    try {
-        existingTimeEntry = await db.timeEntry.get(startingMondayDateString);
-    } catch (error) {
-        if ((error as any).response?.type !== "document_not_found") {
-            throw error;
-        }
+  await Promise.all(
+      validEntries.map((entry) => {
+          //set date to midnight
+          entry.date = getDateValue(entry.date)
+          addOrUpdateTimeEntryDocument(entry)
+      })
+  )
+}
+
+async function addOrUpdateTimeEntryDocument(
+  entry: TimeEntryData
+): Promise<boolean> {
+
+    const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+
+  const timeEntryDocuments = await timeEntryCollection.query([
+    Query.equal("date", getDateValue(entry.date).toISOString()),
+  ])
+  const timeEntryDocument = timeEntryDocuments.documents[0]
+
+  try {
+    if (timeEntryDocument) {
+      timeEntryDocument.hours = entry.hours
+      timeEntryDocument.date = entry.date
+      await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
+      return true
     }
-    if (existingTimeEntry) {
- db.timeEntry.update(startingMondayDateString, stringifiedData)
+    await timeEntryCollection.create(ID.unique(), entry)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+async function getTimeEntryData(
+  entry: TimeEntryData
+): Promise<boolean> {
+
+    const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+
+  const timeEntryDocuments = await timeEntryCollection.query([
+    Query.equal("date", getDateValue(entry.date).toISOString()),
+  ])
+  const timeEntryDocument = timeEntryDocuments.documents[0]
+
+  try {
+    if (timeEntryDocument) {
+      timeEntryDocument.hours = entry.hours
+      timeEntryDocument.date = entry.date
+      await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
+      return true
     }
-    else {
-        db.timeEntry.create(startingMondayDateString, stringifiedData)
-    }
+    await timeEntryCollection.create(ID.unique(), entry)
+    return true
+  } catch (error) {
+    return false
+  }
 }

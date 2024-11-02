@@ -1,7 +1,8 @@
-import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-import type { } from '@redux-devtools/extension' // required for devtools typing
-import { SheetDate } from '@/types'
+import type {} from "@redux-devtools/extension" // required for devtools typing
+import { create } from "zustand"
+import { devtools, persist } from "zustand/middleware"
+
+import type { SheetDate } from "@/types"
 
 interface WeeklySheetState {
   activeSheetDates: SheetDate[]
@@ -34,8 +35,8 @@ export const useSheetStore = create<WeeklySheetState>()(
           })),
       }),
       {
-        name: 'timesheet-storage',
-      },
-    ),
-  ),
+        name: "timesheet-storage",
+      }
+    )
+  )
 )

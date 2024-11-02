@@ -1,6 +1,6 @@
-import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-import type { } from '@redux-devtools/extension' // required for devtools typing
+import type {} from "@redux-devtools/extension" // required for devtools typing
+import { create } from "zustand"
+import { devtools, persist } from "zustand/middleware"
 
 interface clientState {
   clients: string[]
@@ -8,7 +8,6 @@ interface clientState {
   addclient: (client: string) => void
   addProject: (project: string) => void
 }
-
 
 const useClientStore = create<clientState>()(
   devtools(
@@ -26,8 +25,8 @@ const useClientStore = create<clientState>()(
           })),
       }),
       {
-        name: 'client-storage',
-      },
-    ),
-  ),
+        name: "client-storage",
+      }
+    )
+  )
 )
