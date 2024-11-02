@@ -26,9 +26,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { getDatesOfWeek, timestampStringToDate } from "@/lib/date-utils"
-import { addOrUpdateWeeklyTimeSheet, getTimeEntryData } from "@/lib/server/timesheet"
-import type { SheetDate, TimeEntryData } from "@/lib/types/document-data.types"
+import { dateToDayString, dateToLocaleString, getBrowserLocale, getDatesOfWeek } from "@/lib/date-utils"
+import { format } from "date-fns"
+import { addOrUpdateWeeklyTimeSheet, populateTimeEntryData } from "@/lib/server/timesheet"
+import type { TimeEntryData } from "@/lib/types/document-data.types"
 
 interface TimesheetTableProps {
   weekStart: Date
@@ -36,15 +37,12 @@ interface TimesheetTableProps {
 
 const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
 
-  const [activeSheetDates, setactiveSheetDates] = React.useState<SheetDate[]>([])
+  const activeDates = getDatesOfWeek(weekStart)
+
   const [timeEntryData, setTimeEntryData] = React.useState<TimeEntryData[]>([])
 
   const fetchTimeEntryData = React.useCallback(async () => {
-    const dates = getDatesOfWeek(weekStart)
-    console.log("dates", dates)
-    setactiveSheetDates(dates)
-    const data = await getTimeEntryData(activeSheetDates)
-    console.log("data", data)
+    const data = await populateTimeEntryData(activeDates)
     setTimeEntryData(data)
   }, [weekStart])
 
@@ -53,9 +51,11 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
   }, [weekStart]);
 
 
+
+
   //extract 
 
-  const createFormSchema = (dates: { date: Date }[]) => {
+  const createFormSchema = (dates: TimeEntryData[]) => {
     const baseSchema = z.union([
       z.string().refine((val) => val === "", {
         message: "Please enter a valid number or leave it empty",
@@ -73,27 +73,24 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
     ])
 
     return z.object(
-      dates.reduce<Record<string, typeof baseSchema>>((schema, date) => {
-        schema[date.date.getTime()] = baseSchema
+      dates.reduce<Record<string, typeof baseSchema>>((schema, timeEntryData) => {
+        schema[timeEntryData.date] = baseSchema
         return schema
       }, {})
     )
   }
 
   const form = useForm({
-    resolver: zodResolver(createFormSchema(activeSheetDates)),
+    resolver: zodResolver(createFormSchema(timeEntryData)),
     mode: "all",
-    // ToDo: Assign values from server
-    values: activeSheetDates.reduce<Record<string, string>>(
-      (values, sheetDate) => {
-        values[sheetDate.date.getTime()] =
-          //find the date in timeEntryData and assign the hours
-          timeEntryData.find((entry) => entry.date.getTime() === sheetDate.date.getTime())?.hours.toString() ?? ""; // Ensure default value is set
-        return values
+    defaultValues: timeEntryData.reduce<Record<string, string>>(
+      (values: Record<string, string>, timeEntry) => {
+        values[timeEntry.date] = timeEntry.hours === 0 ? "" : timeEntry.hours.toString()
+        return values;
       },
       {}
     ),
-  })
+  });
 
   const onSubmit = async (data: Record<string, string>) => {
     const result = Object.entries(data).reduce<TimeEntryData[]>(
@@ -101,7 +98,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
         const hours = parseFloat(value)
         if (!Number.isNaN(hours) && hours > 0) {
           acc.push({
-            date: timestampStringToDate(key),
+            date: key,
             hours,
           })
         }
@@ -113,11 +110,11 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
   }
 
   const timesheetProps =
-    activeSheetDates.length > 0
+    activeDates.length > 0
       ? {
-        title: `Week starting on: ${activeSheetDates[0]?.day ?? "N/A"}`,
-        description: `Period between ${activeSheetDates[0]?.localeDateString ?? "N/A"} and ${activeSheetDates[6]?.localeDateString ?? "N/A"}`,
-        headers: activeSheetDates.map((week) => ({ title: week.day })),
+        title: `Week starting on: ${activeDates[0] ? dateToDayString(activeDates[0]) ?? "N/A" : "N/A"}`,
+        description: `Period between ${activeDates[0] ? dateToLocaleString(activeDates[0]) : "N/A"} and ${activeDates[6] ? dateToLocaleString(activeDates[6]) : "N/A"}`,
+        headers: activeDates.map((week: Date) => ({ title: dateToDayString(week) })),
       }
       : {
         title: "Week starting on: N/A",
@@ -144,13 +141,12 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
             </TableHeader>
             <TableBody>
               <TableRow key="row-inputs">
-                {activeSheetDates.map((date) => {
-                  const dateKey = date.date.getTime().toString()
+                {timeEntryData.map((data) => {
                   return (
-                    <TableCell key={`cell-${dateKey}`}>
+                    <TableCell key={`cell-${data.date}`}>
                       <FormField
                         control={form.control}
-                        name={dateKey}
+                        name={data.date}
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
@@ -173,5 +169,6 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
     </Card>
   )
 }
+
 
 export { TimesheetTable }

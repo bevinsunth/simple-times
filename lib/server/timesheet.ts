@@ -3,27 +3,23 @@
 import { ID, Query } from "node-appwrite"
 
 import type {
-    SheetDate,
   TimeEntryData,
   TimeEntryDocument,
 } from "@/lib/types/document-data.types"
 
-import { getDateValue } from "../date-utils"
+import { compareDates, formatDateDDMMYYYY, getDateValue, parseDateDDMMYYYY } from "../date-utils"
 import { GetDbOperations } from "./databases"
 
 
 export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
   // remove any entries with invalid date or hours value
-  const validEntries = entries.filter((entry) => {
-    const isValidDate = !isNaN(entry.date.getTime())
+    const validEntries = entries.filter((entry) => {
     const isValidHours = typeof entry.hours === "number" && entry.hours > 0
-    return isValidDate && isValidHours
+    return isValidHours
   })
 
   await Promise.all(
       validEntries.map((entry) => {
-          //set date to midnight
-          entry.date = getDateValue(entry.date)
           addOrUpdateTimeEntryDocument(entry)
       })
   )
@@ -36,7 +32,7 @@ async function addOrUpdateTimeEntryDocument(
 const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
   const timeEntryDocuments = await timeEntryCollection.query([
-    Query.equal("date", getDateValue(entry.date).toISOString()),
+    Query.equal("date", entry.date),
   ])
   const timeEntryDocument = timeEntryDocuments.documents[0]
 
@@ -54,17 +50,21 @@ const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry"
   }
 }
 
-export async function getTimeEntryData(
-  sheetDates: SheetDate[]
+export async function populateTimeEntryData(
+  dates: Date[]
 ): Promise<TimeEntryData[]> {
 
     const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
     
-    const queries = sheetDates.map((sheetDate) => Query.equal("date", sheetDate.date.toISOString()))
+    const queries = dates.map((date) => Query.equal("date", date.toISOString()))
     const timeEntryDocuments = await timeEntryCollection.query(queries)
 
-    return timeEntryDocuments.documents.map((document) => ({
-        date: document.date,
-        hours: document.hours,
-    }))
+    const timeEntryData = dates.map((date) => {
+        const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.date)))
+        return {
+            date: formatDateDDMMYYYY(date),
+            hours: document ? document.hours : 0,
+        }
+    })
+    return timeEntryData
 }
