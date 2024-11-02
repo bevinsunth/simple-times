@@ -15,3 +15,12 @@ export interface CollectionTypeMapping {
 export type AllDocumentTypes = TimeEntryDocument | Models.Document
 
 export type AllDataTypes = TimeEntryData
+
+
+export const DaysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+
+export interface SheetDate extends TimeEntryData {
+    localeDateString: string;
+    day: typeof DaysOfWeek[number];
+}

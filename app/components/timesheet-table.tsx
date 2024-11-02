@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Clock } from "lucide-react"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -27,15 +27,33 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { getDatesOfWeek, timestampStringToDate } from "@/lib/date-utils"
-import { addOrUpdateWeeklyTimeSheet } from "@/lib/server/timesheet"
-import type { TimeEntryData } from "@/lib/types/document-data.types"
+import { addOrUpdateWeeklyTimeSheet, getTimeEntryData } from "@/lib/server/timesheet"
+import type { SheetDate, TimeEntryData } from "@/lib/types/document-data.types"
 
 interface TimesheetTableProps {
   weekStart: Date
 }
 
 const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
-  const activeSheetDates = getDatesOfWeek(weekStart)
+
+  const [activeSheetDates, setactiveSheetDates] = React.useState<SheetDate[]>([])
+  const [timeEntryData, setTimeEntryData] = React.useState<TimeEntryData[]>([])
+
+  const fetchTimeEntryData = React.useCallback(async () => {
+    const dates = getDatesOfWeek(weekStart)
+    console.log("dates", dates)
+    setactiveSheetDates(dates)
+    const data = await getTimeEntryData(activeSheetDates)
+    console.log("data", data)
+    setTimeEntryData(data)
+  }, [weekStart])
+
+  useEffect(() => {
+    fetchTimeEntryData();
+  }, [weekStart]);
+
+
+  //extract 
 
   const createFormSchema = (dates: { date: Date }[]) => {
     const baseSchema = z.union([
@@ -68,7 +86,9 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
     // ToDo: Assign values from server
     values: activeSheetDates.reduce<Record<string, string>>(
       (values, sheetDate) => {
-        values[sheetDate.date.getTime()] = "" // Ensure default value is set
+        values[sheetDate.date.getTime()] =
+          //find the date in timeEntryData and assign the hours
+          timeEntryData.find((entry) => entry.date.getTime() === sheetDate.date.getTime())?.hours.toString() ?? ""; // Ensure default value is set
         return values
       },
       {}
@@ -95,15 +115,15 @@ const TimesheetTable: React.FC<TimesheetTableProps> = ({ weekStart }) => {
   const timesheetProps =
     activeSheetDates.length > 0
       ? {
-          title: `Week starting on: ${activeSheetDates[0]?.day ?? "N/A"}`,
-          description: `Period between ${activeSheetDates[0]?.localeDateString ?? "N/A"} and ${activeSheetDates[6]?.localeDateString ?? "N/A"}`,
-          headers: activeSheetDates.map((week) => ({ title: week.day })),
-        }
+        title: `Week starting on: ${activeSheetDates[0]?.day ?? "N/A"}`,
+        description: `Period between ${activeSheetDates[0]?.localeDateString ?? "N/A"} and ${activeSheetDates[6]?.localeDateString ?? "N/A"}`,
+        headers: activeSheetDates.map((week) => ({ title: week.day })),
+      }
       : {
-          title: "Week starting on: N/A",
-          description: "Period between N/A and N/A",
-          headers: [],
-        }
+        title: "Week starting on: N/A",
+        description: "Period between N/A and N/A",
+        headers: [],
+      }
 
   return (
     <Card>

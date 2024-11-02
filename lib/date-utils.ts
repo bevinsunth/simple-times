@@ -1,5 +1,4 @@
-import { DaysOfWeek } from "@/types/constants"
-import type { SheetDate } from "@/types/index"
+import { DaysOfWeek, type SheetDate } from "@/lib/types/document-data.types"
 
 export const getDatesOfWeek = (date: Date): SheetDate[] => {
   const day = date.getDay()
@@ -7,13 +6,14 @@ export const getDatesOfWeek = (date: Date): SheetDate[] => {
   const monday = new Date(date)
   monday.setDate(date.getDate() - diffToMonday)
 
-  const weekDates = DaysOfWeek.map((day, index) => {
+  const weekDates =  DaysOfWeek.map((day, index) => {
     const date = new Date(monday)
     date.setDate(monday.getDate() + index)
     return {
-      date,
+      date: getDateValue(date),
       day,
       localeDateString: dateToLocaleString(date),
+      hours: 0, // or any default value for hours
     }
   })
 

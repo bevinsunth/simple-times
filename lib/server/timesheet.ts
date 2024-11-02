@@ -3,6 +3,7 @@
 import { ID, Query } from "node-appwrite"
 
 import type {
+    SheetDate,
   TimeEntryData,
   TimeEntryDocument,
 } from "@/lib/types/document-data.types"
@@ -32,7 +33,7 @@ async function addOrUpdateTimeEntryDocument(
   entry: TimeEntryData
 ): Promise<boolean> {
 
-    const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
   const timeEntryDocuments = await timeEntryCollection.query([
     Query.equal("date", getDateValue(entry.date).toISOString()),
@@ -53,27 +54,17 @@ async function addOrUpdateTimeEntryDocument(
   }
 }
 
-async function getTimeEntryData(
-  entry: TimeEntryData
-): Promise<boolean> {
+export async function getTimeEntryData(
+  sheetDates: SheetDate[]
+): Promise<TimeEntryData[]> {
 
     const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+    
+    const queries = sheetDates.map((sheetDate) => Query.equal("date", sheetDate.date.toISOString()))
+    const timeEntryDocuments = await timeEntryCollection.query(queries)
 
-  const timeEntryDocuments = await timeEntryCollection.query([
-    Query.equal("date", getDateValue(entry.date).toISOString()),
-  ])
-  const timeEntryDocument = timeEntryDocuments.documents[0]
-
-  try {
-    if (timeEntryDocument) {
-      timeEntryDocument.hours = entry.hours
-      timeEntryDocument.date = entry.date
-      await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
-      return true
-    }
-    await timeEntryCollection.create(ID.unique(), entry)
-    return true
-  } catch (error) {
-    return false
-  }
+    return timeEntryDocuments.documents.map((document) => ({
+        date: document.date,
+        hours: document.hours,
+    }))
 }
