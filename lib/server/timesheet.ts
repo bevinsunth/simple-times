@@ -29,6 +29,8 @@ async function addOrUpdateTimeEntryDocument(
   entry: TimeEntryData
 ): Promise<boolean> {
 
+  console.log("addOrUpdateTimeEntryDocument", entry)
+
 const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
   const timeEntryDocuments = await timeEntryCollection.query([
@@ -54,10 +56,15 @@ export async function populateTimeEntryData(
   dates: Date[]
 ): Promise<TimeEntryData[]> {
 
-    const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
-    
-    const queries = dates.map((date) => Query.equal("date", date.toISOString()))
-    const timeEntryDocuments = await timeEntryCollection.query(queries)
+  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+  
+  console.log("dates", dates)
+  const queries = [Query.equal("date", dates.map((date) => formatDateDDMMYYYY(date)))]
+  
+    console.log("queries", queries)
+  const timeEntryDocuments = await timeEntryCollection.query(queries)
+  
+  console.log("timeEntryDocuments", timeEntryDocuments)
 
     const timeEntryData = dates.map((date) => {
         const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.date)))
