@@ -111,12 +111,16 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
       }
 
   return (
-    <Card>
-      <Alert>
-        <Clock className="size-4" />
-        <AlertTitle>{timesheetProps.title}</AlertTitle>
-        <AlertDescription>{timesheetProps.description}</AlertDescription>
-      </Alert>
+    <Card className="container mx-auto px-4">
+      <div>
+        <div className="flex-1">
+          <Clock className="size-5" />
+        </div>
+        <div className="flex-1">
+          <AlertTitle>{timesheetProps.title}</AlertTitle>
+          <AlertDescription>{timesheetProps.description}</AlertDescription>
+        </div>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Table>
@@ -138,7 +142,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" {...field} className="w-20" />
                             </FormControl>
                             <FormDescription />
                             <FormMessage />
@@ -151,7 +155,9 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
               </TableRow>
             </TableBody>
           </Table>
-          <Button onClick={form.handleSubmit(onSubmit)}>Submit</Button>
+          <div className="flex justify-center p-5">
+            <Button size={"lg"} className="bg-primary" onClick={form.handleSubmit(onSubmit)}>Submit</Button>
+          </div>
         </form>
       </Form>
     </Card>

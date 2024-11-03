@@ -28,8 +28,12 @@ const Sheet = () => {
   }, [datesOfTheWeek]);
 
   return (
-    <div className="flex min-h-20 flex-col items-center justify-center py-2">
-      {timesheetTableProps && <TimesheetTable {...timesheetTableProps} />}
+    <div className="flex flex-col min-h-lvh p-10">
+      <div className="flex-3"></div>
+      <div className="flex justify-center items-center flex-1">
+        {timesheetTableProps && <TimesheetTable {...timesheetTableProps} />}
+      </div>
+      <div className="flex-1"></div>
     </div>
   )
 }
