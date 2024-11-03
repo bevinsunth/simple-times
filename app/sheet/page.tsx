@@ -5,19 +5,18 @@ import React, { useEffect, useState, useCallback } from "react"
 import { TimesheetTable, TimesheetTableProps } from "@/app/components/timesheet-table"
 import { getDatesOfWeek } from "@/lib/date-utils"
 import { populateTimeEntryData } from "@/lib/server/timesheet"
-import { date } from "zod"
 
 const today = new Date()
+const datesOfTheWeek = getDatesOfWeek(today)
 
 const Sheet = () => {
 
   const [timesheetTableProps, setTimesheetTableProps] = useState<TimesheetTableProps>()
 
   const fetchTimeEntryData = useCallback(async (date: Date) => {
-    const datesOfTheWeek = getDatesOfWeek(date)
     const data = await populateTimeEntryData(datesOfTheWeek)
     return { timeEntryData: data, activeDates: datesOfTheWeek }
-  }, [])
+  }, [datesOfTheWeek])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +25,7 @@ const Sheet = () => {
       setTimesheetTableProps(data);
     };
     fetchData();
-  }, [today]);
+  }, [datesOfTheWeek]);
 
   return (
     <div className="flex min-h-20 flex-col items-center justify-center py-2">

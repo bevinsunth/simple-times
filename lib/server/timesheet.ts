@@ -56,8 +56,6 @@ export async function populateTimeEntryData(
 ): Promise<TimeEntryData[]> {
 
   console.log("populateTimeEntryData called")
-  console.log(dates)
-
   const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
   
   const queries = [Query.equal("date", dates.map((date) => formatDateDDMMYYYY(date)))]
