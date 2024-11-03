@@ -12,6 +12,7 @@ import { GetDbOperations } from "./databases"
 
 
 export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
+  console.log("addOrUpdateWeeklyTimeSheet called")
   // remove any entries with invalid date or hours value
     const validEntries = entries.filter((entry) => {
     const isValidHours = typeof entry.hours === "number" && entry.hours > 0
@@ -28,8 +29,6 @@ export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
 async function addOrUpdateTimeEntryDocument(
   entry: TimeEntryData
 ): Promise<boolean> {
-
-  console.log("addOrUpdateTimeEntryDocument", entry)
 
 const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
@@ -56,16 +55,14 @@ export async function populateTimeEntryData(
   dates: Date[]
 ): Promise<TimeEntryData[]> {
 
+  console.log("populateTimeEntryData called")
+  console.log(dates)
+
   const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
   
-  console.log("dates", dates)
   const queries = [Query.equal("date", dates.map((date) => formatDateDDMMYYYY(date)))]
-  
-    console.log("queries", queries)
   const timeEntryDocuments = await timeEntryCollection.query(queries)
   
-  console.log("timeEntryDocuments", timeEntryDocuments)
-
     const timeEntryData = dates.map((date) => {
         const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.date)))
         return {

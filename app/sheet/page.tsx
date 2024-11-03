@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback } from "react"
 import { TimesheetTable, TimesheetTableProps } from "@/app/components/timesheet-table"
 import { getDatesOfWeek } from "@/lib/date-utils"
 import { populateTimeEntryData } from "@/lib/server/timesheet"
+import { date } from "zod"
 
 const today = new Date()
 
@@ -25,7 +26,7 @@ const Sheet = () => {
       setTimesheetTableProps(data);
     };
     fetchData();
-  }, [fetchTimeEntryData]);
+  }, [today]);
 
   return (
     <div className="flex min-h-20 flex-col items-center justify-center py-2">
