@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Clock } from "lucide-react"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -39,15 +39,8 @@ export interface TimesheetTableProps {
 const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProps) => {
 
 
-
-
-  //extract 
-
   const createFormSchema = (dates: TimeEntryData[]) => {
     const baseSchema = z.union([
-      z.string().refine((val) => val === "", {
-        message: "Please enter a valid number or leave it empty",
-      }),
       z.coerce
         .number({
           message: "Please enter a valid number",
@@ -56,8 +49,12 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
           message: "Please enter a positive number",
         })
         .lte(24, {
-          message: "Please enter a smaller number",
-        }),
+          message: "Please enter a number smaller than 24",
+        })
+        .optional(),
+      z.string().refine((val) => val === "", {
+        message: "Please enter a valid number or leave it empty",
+      })
     ])
 
     return z.object(
