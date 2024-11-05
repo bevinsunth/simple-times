@@ -69,6 +69,7 @@ export async function populateTimeEntryData(
   
   const queries = [Query.equal("dateString", dates.map((date) => formatDateDDMMYYYY(date)))]
   const timeEntryDocuments = await timeEntryCollection.query(queries)
+  console.log(timeEntryDocuments)
   
     const timeEntryData = dates.map((date) => {
         const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.dateString)))
@@ -90,4 +91,38 @@ const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry"
     Query.between("dateTime", getDateValue(startDate).toISOString(), getDateValue(endDate).toISOString()),
   ])
   return timeEntryDocuments.documents
+}
+
+//get start date and end date and populate documents for that date range even when no matching date is found
+export async function getDocumentsForDatesBetweenWithEmptyDates(startDate: Date, endDate: Date
+): Promise<TimeEntryData  []> {
+
+  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+
+  const timeEntryDocuments = await timeEntryCollection.query([
+    Query.between("dateTime", getDateValue(startDate).toISOString(), getDateValue(endDate).toISOString()),
+  ])
+  const timeEntryData: TimeEntryData[] = []
+
+  let currentDate = startDate
+  while (currentDate <= endDate) {
+    const document = timeEntryDocuments.documents.find((doc) => compareDates(currentDate, parseDateDDMMYYYY(doc.dateString)))
+    if (document) {
+      timeEntryData.push(
+        {
+          dateTime: document.dateTime,
+          dateString: document.dateString,
+          hours: document.hours,
+        }
+      )
+    } else {
+      timeEntryData.push({
+        dateTime: getDateValue(currentDate),
+        dateString: formatDateDDMMYYYY(currentDate),
+        hours: 0,
+      })
+    }
+    currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+  }
+  return timeEntryData
 }

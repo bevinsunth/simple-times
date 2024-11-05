@@ -13,7 +13,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { getDocumentsForDatesBetween } from "@/lib/server/timesheet"
+import { getDocumentsForDatesBetween, getDocumentsForDatesBetweenWithEmptyDates } from "@/lib/server/timesheet"
 import { PDFDownloadLink } from "@react-pdf/renderer"
 import PDFReport from '../components/pdfreport'
 
@@ -28,8 +28,9 @@ const Reports = ({
     const [timesheetData, setTimesheetData] = React.useState<any[]>([]);
 
     const OnClick = async (from: Date, to: Date) => {
-        const documents = await getDocumentsForDatesBetween(from, to)
-        setTimesheetData(documents)
+        const timeEntryData = await getDocumentsForDatesBetweenWithEmptyDates(from, to)
+        console.log(timeEntryData)
+        setTimesheetData(timeEntryData)
     }
 
     return (

@@ -76,6 +76,8 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
     ),
   });
 
+  console.log(form)
+
   const onSubmit = async (data: Record<string, string>) => {
     const result = Object.entries(data).reduce<TimeEntryData[]>(
       (acc, [key, value]: [string, string]) => {
@@ -123,7 +125,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
               <TableRow key="row-header">
                 {props.timeEntryData.map((data, key) => {
                   return (
-                    <TableHead key={key}> {data.dateString} </TableHead>
+                    <TableHead key={key}> {dateToLocaleString(data.dateTime)} </TableHead>
                   )
                 })}
               </TableRow>

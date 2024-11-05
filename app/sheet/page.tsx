@@ -17,9 +17,6 @@ const Sheet = () => {
   const [datesOfTheWeek, setDatesOfTheWeek] = useState<Date[]>(sheetDates)
   const [timesheetTableProps, setTimesheetTableProps] = useState<TimesheetTableProps>()
 
-  useEffect(() => {
-    setDatesOfTheWeek(getDatesOfWeek(activeDay))
-  }, [activeDay])
 
 
   const fetchTimeEntryData = useCallback(async (dates: Date[]) => {
@@ -38,10 +35,12 @@ const Sheet = () => {
 
   const onClickPrevious = () => {
     setActiveDay(new Date(activeDay.setDate(activeDay.getDate() - 7)))
+    setDatesOfTheWeek(getDatesOfWeek(activeDay))
   }
 
   const onClickNext = () => {
     setActiveDay(new Date(activeDay.setDate(activeDay.getDate() + 7)))
+    setDatesOfTheWeek(getDatesOfWeek(activeDay))
   }
 
   return (
