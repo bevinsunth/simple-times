@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Clock } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { date, z } from "zod"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -99,12 +99,10 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
       ? {
         title: `Week starting on: ${props.activeDates[0] ? dateToDayString(props.activeDates[0]) ?? "N/A" : "N/A"}`,
         description: `Period between ${props.activeDates[0] ? dateToLocaleString(props.activeDates[0]) : "N/A"} and ${props.activeDates[6] ? dateToLocaleString(props.activeDates[6]) : "N/A"}`,
-        headers: props.activeDates.map((week: Date) => ({ title: dateToDayString(week) })),
       }
       : {
         title: "Week starting on: N/A",
         description: "Period between N/A and N/A",
-        headers: [],
       }
 
   return (
@@ -123,9 +121,18 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
           <Table>
             <TableHeader>
               <TableRow key="row-header">
-                {timesheetProps.headers.map((header, index) => (
-                  <TableHead key={index}> {header.title} </TableHead>
-                ))}
+                {props.timeEntryData.map((data, key) => {
+                  return (
+                    <TableHead key={key}> {data.dateString} </TableHead>
+                  )
+                })}
+              </TableRow>
+              <TableRow key="row-header">
+                {props.timeEntryData.map((data, key) => {
+                  return (
+                    <TableHead key={key}> {dateToDayString(data.dateTime)} </TableHead>
+                  )
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>

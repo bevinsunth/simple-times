@@ -22,15 +22,15 @@ const Sheet = () => {
   }, [activeDay])
 
 
-  const fetchTimeEntryData = useCallback(async () => {
-    const data = await populateTimeEntryData(datesOfTheWeek)
-    return { timeEntryData: data, activeDates: datesOfTheWeek }
+  const fetchTimeEntryData = useCallback(async (dates: Date[]) => {
+    const data = await populateTimeEntryData(dates)
+    return { timeEntryData: data, activeDates: dates }
   }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       if (!activeDay) return;
-      const data = await fetchTimeEntryData();
+      const data = await fetchTimeEntryData(datesOfTheWeek);
       setTimesheetTableProps(data);
     };
     fetchData();
@@ -61,7 +61,6 @@ const Sheet = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-
       </div>
     </div>
   )
