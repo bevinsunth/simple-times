@@ -9,6 +9,7 @@ import type {
 
 import { compareDates, formatDateDDMMYYYY, getDateValue, parseDateDDMMYYYY } from "../date-utils"
 import { GetDbOperations } from "./databases"
+import { console } from "inspector"
 
 
 export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
@@ -17,7 +18,9 @@ export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
     const validEntries = entries.filter((entry) => {
     const isValidHours = typeof entry.hours === "number" && entry.hours > 0
     return isValidHours
-  })
+    })
+  
+  console.log(validEntries)
 
   await Promise.all(
       validEntries.map((entry) => {
@@ -30,17 +33,20 @@ async function addOrUpdateTimeEntryDocument(
   entry: TimeEntryData
 ): Promise<boolean> {
 
+      console.log(entry)
+
 const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
   const timeEntryDocuments = await timeEntryCollection.query([
-    Query.equal("date", entry.date),
+    Query.equal("dateString", entry.dateString),
   ])
   const timeEntryDocument = timeEntryDocuments.documents[0]
 
   try {
     if (timeEntryDocument) {
       timeEntryDocument.hours = entry.hours
-      timeEntryDocument.date = entry.date
+      timeEntryDocument.dateString = entry.dateString
+      timeEntryDocument.dateTime = entry.dateTime
       await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
       return true
     }
@@ -58,15 +64,28 @@ export async function populateTimeEntryData(
   console.log("populateTimeEntryData called")
   const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
   
-  const queries = [Query.equal("date", dates.map((date) => formatDateDDMMYYYY(date)))]
+  const queries = [Query.equal("dateString", dates.map((date) => formatDateDDMMYYYY(date)))]
   const timeEntryDocuments = await timeEntryCollection.query(queries)
   
     const timeEntryData = dates.map((date) => {
         const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.date)))
-        return {
-            date: formatDateDDMMYYYY(date),
+      return {
+            dateTime: document?.dateTime ?? getDateValue(date),
+            dateString: formatDateDDMMYYYY(date),
             hours: document ? document.hours : 0,
         }
     })
+  console.log(timeEntryData)
     return timeEntryData
+}
+
+export async function getDocumentsForDatesBetween(startDate: Date, endDate: Date
+): Promise<TimeEntryDocument[]> {
+
+const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+
+  const timeEntryDocuments = await timeEntryCollection.query([
+    Query.between("dateTime", getDateValue(startDate).toISOString(), getDateValue(endDate).toISOString()),
+  ])
+  return timeEntryDocuments.documents
 }

@@ -26,9 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { dateToDayString, dateToLocaleString } from "@/lib/date-utils"
-import { format } from "date-fns"
-import { addOrUpdateWeeklyTimeSheet, populateTimeEntryData } from "@/lib/server/timesheet"
+import { dateToDayString, dateToLocaleString, getDateValue, parseDateDDMMYYYY } from "@/lib/date-utils"
+import { addOrUpdateWeeklyTimeSheet } from "@/lib/server/timesheet"
 import type { TimeEntryData } from "@/lib/types/document-data.types"
 
 export interface TimesheetTableProps {
@@ -59,7 +58,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
 
     return z.object(
       dates.reduce<Record<string, typeof baseSchema>>((schema, timeEntryData) => {
-        schema[timeEntryData.date] = baseSchema
+        schema[timeEntryData.dateString] = baseSchema
         return schema
       }, {})
     )
@@ -70,7 +69,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
     mode: "all",
     defaultValues: props.timeEntryData.reduce<Record<string, string>>(
       (values: Record<string, string>, timeEntry) => {
-        values[timeEntry.date] = timeEntry.hours === 0 ? "" : timeEntry.hours.toString()
+        values[timeEntry.dateString] = timeEntry.hours === 0 ? "" : timeEntry.hours.toString()
         return values;
       },
       {}
@@ -78,12 +77,14 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
   });
 
   const onSubmit = async (data: Record<string, string>) => {
+    console.log(data)
     const result = Object.entries(data).reduce<TimeEntryData[]>(
       (acc, [key, value]: [string, string]) => {
         const hours = parseFloat(value)
         if (!Number.isNaN(hours) && hours > 0) {
           acc.push({
-            date: key,
+            dateString: key,
+            dateTime: parseDateDDMMYYYY(key),
             hours,
           })
         }
@@ -91,6 +92,7 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
       },
       []
     )
+    console.log(result)
     await addOrUpdateWeeklyTimeSheet(result)
   }
 
@@ -132,10 +134,10 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
               <TableRow key="row-inputs">
                 {props.timeEntryData.map((data) => {
                   return (
-                    <TableCell key={`cell-${data.date}`}>
+                    <TableCell key={`cell-${data.dateString}`}>
                       <FormField
                         control={form.control}
-                        name={data.date}
+                        name={data.dateString}
                         render={({ field }) => (
                           <FormItem>
                             <FormControl>

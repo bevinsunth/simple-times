@@ -22,15 +22,15 @@ const Sheet = () => {
   }, [activeDay])
 
 
-  const fetchTimeEntryData = useCallback(async (date: Date) => {
+  const fetchTimeEntryData = useCallback(async () => {
     const data = await populateTimeEntryData(datesOfTheWeek)
     return { timeEntryData: data, activeDates: datesOfTheWeek }
-  }, [datesOfTheWeek])
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       if (!activeDay) return;
-      const data = await fetchTimeEntryData(activeDay);
+      const data = await fetchTimeEntryData();
       setTimesheetTableProps(data);
     };
     fetchData();
