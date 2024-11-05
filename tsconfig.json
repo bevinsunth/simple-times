@@ -25,14 +25,15 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "lib/server/appwrite.ts",
+    "lib/server/appwrite.ts"
   ],
   "exclude": [
     "node_modules"

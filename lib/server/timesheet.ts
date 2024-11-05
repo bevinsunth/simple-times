@@ -71,7 +71,7 @@ export async function populateTimeEntryData(
   const timeEntryDocuments = await timeEntryCollection.query(queries)
   
     const timeEntryData = dates.map((date) => {
-        const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.date)))
+        const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.dateString)))
       return {
             dateTime: document?.dateTime ?? getDateValue(date),
             dateString: formatDateDDMMYYYY(date),
