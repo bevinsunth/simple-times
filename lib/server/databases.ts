@@ -20,9 +20,8 @@ interface CollectionOperations<T extends Models.Document> {
 const collections = {
   timeEntry: {
     databaseId: process.env.NEXT_APPWRITE_DATABASE_ID ?? "",
-    collectionId: process.env.NEXT_APPWRITE_COLLECTION_ID ?? "",
+    collectionId: process.env.NEXT_APPWRITE_TIMEENTRY_COLLECTION_ID ?? "",
   },
-  // Add more collections as needed
 } as const
 
 type CollectionNames = keyof typeof collections

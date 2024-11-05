@@ -9,18 +9,17 @@ import type {
 
 import { compareDates, formatDateDDMMYYYY, getDateValue, parseDateDDMMYYYY } from "../date-utils"
 import { GetDbOperations } from "./databases"
-import { console } from "inspector"
+import { getLoggedInUser } from "./appwrite"
 
 
 export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
-  console.log("addOrUpdateWeeklyTimeSheet called")
+
   // remove any entries with invalid date or hours value
     const validEntries = entries.filter((entry) => {
     const isValidHours = typeof entry.hours === "number" && entry.hours > 0
     return isValidHours
     })
   
-  console.log(validEntries)
 
   await Promise.all(
       validEntries.map((entry) => {
@@ -33,20 +32,25 @@ async function addOrUpdateTimeEntryDocument(
   entry: TimeEntryData
 ): Promise<boolean> {
 
-      console.log(entry)
 
 const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
+
 
   const timeEntryDocuments = await timeEntryCollection.query([
     Query.equal("dateString", entry.dateString),
   ])
   const timeEntryDocument = timeEntryDocuments.documents[0]
 
+  const user = await getLoggedInUser()
+  console.log(user)
+
   try {
     if (timeEntryDocument) {
       timeEntryDocument.hours = entry.hours
       timeEntryDocument.dateString = entry.dateString
       timeEntryDocument.dateTime = entry.dateTime
+      //Fix empty id
+      timeEntryDocument.userId = user?.$id ?? ""
       await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
       return true
     }
@@ -61,7 +65,6 @@ export async function populateTimeEntryData(
   dates: Date[]
 ): Promise<TimeEntryData[]> {
 
-  console.log("populateTimeEntryData called")
   const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
   
   const queries = [Query.equal("dateString", dates.map((date) => formatDateDDMMYYYY(date)))]
@@ -75,7 +78,6 @@ export async function populateTimeEntryData(
             hours: document ? document.hours : 0,
         }
     })
-  console.log(timeEntryData)
     return timeEntryData
 }
 

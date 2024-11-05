@@ -10,38 +10,36 @@ interface PDFReportProps {
 }
 
 const styles = StyleSheet.create({
-  page: { fontSize: 11, paddingTop: 20, paddingLeft: 40, paddingRight: 40, lineHeight: 1.5, flexDirection: 'column' },
+  page: { backgroundColor: '#E5E4E2', fontSize: 11, paddingTop: 20, paddingLeft: 40, paddingRight: 50, lineHeight: 1.5, flexDirection: 'column' },
   spaceBetween: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', color: "#3E3E3E" },
   titleContainer: { flexDirection: 'row', marginTop: 24 },
   reportTitle: { fontSize: 16, textAlign: 'center' },
   table: { width: "auto", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 },
   tableRow: { flexDirection: "row" },
   tableCell: { margin: "auto", marginTop: 5, fontSize: 10 },
-  theader: { marginTop: 20, fontSize: 10, fontWeight: 'bold', paddingTop: 4, paddingLeft: 7, flex: 1, height: 20, backgroundColor: '#DEDEDE', borderColor: 'whitesmoke', borderRightWidth: 1, borderBottomWidth: 1 },
-  theader2: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1 },
+  theader: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1, color: "#7393B3", fontSize: 20, fontWeight: 'bold' },
   tbody: { fontSize: 9, paddingTop: 4, paddingLeft: 7, flex: 1, borderColor: 'whitesmoke', borderRightWidth: 1, borderBottomWidth: 1 },
-  tbody2: { flex: 2, borderRightWidth: 1 },
 });
 
 const PDFReport: React.FC<PDFReportProps> = ({ timesheetData }) => {
   return (
     <Document>
-      <Page style={styles.page}>
+      <Page size="A4" style={styles.page}>
         <View style={styles.titleContainer}>
-          <Text style={styles.reportTitle}>Timesheet Report</Text>
+          <Text style={styles.reportTitle}>Timesheet for the period {dateToLocaleString(timesheetData[0].dateTime)} to {dateToLocaleString(timesheetData[timesheetData.length - 1].dateTime)} </Text>
         </View>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <View style={styles.theader2}>
+            <View style={styles.theader}>
               <Text style={styles.tableCell}>Date</Text>
             </View>
-            <View style={styles.theader2}>
+            <View style={styles.theader}>
               <Text style={styles.tableCell}>Day</Text>
             </View>
-            <View style={styles.theader2}>
+            <View style={styles.theader}>
               <Text style={styles.tableCell}>Project</Text>
             </View>
-            <View style={styles.theader2}>
+            <View style={styles.theader}>
               <Text style={styles.tableCell}>Hours</Text>
             </View>
           </View>

@@ -2,7 +2,7 @@ import { cookies } from "next/headers"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
-import { createAdminClient } from "@/lib/server/appwrite"
+import { createAdminClient, getLoggedInUser } from "@/lib/server/appwrite"
 
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get("userId")
@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
     sameSite: "strict",
     secure: true,
   })
+
+  const user = await getLoggedInUser()
 
   return NextResponse.redirect(`${request.nextUrl.origin}/sheet`)
 }

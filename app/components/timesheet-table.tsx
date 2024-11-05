@@ -77,7 +77,6 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
   });
 
   const onSubmit = async (data: Record<string, string>) => {
-    console.log(data)
     const result = Object.entries(data).reduce<TimeEntryData[]>(
       (acc, [key, value]: [string, string]) => {
         const hours = parseFloat(value)
@@ -92,7 +91,6 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
       },
       []
     )
-    console.log(result)
     await addOrUpdateWeeklyTimeSheet(result)
   }
 

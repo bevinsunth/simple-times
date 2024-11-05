@@ -29,7 +29,6 @@ const Reports = ({
 
     const OnClick = async (from: Date, to: Date) => {
         const documents = await getDocumentsForDatesBetween(from, to)
-        console.log(documents)
         setTimesheetData(documents)
     }
 
