@@ -1,69 +1,52 @@
 "use client"
 
 import * as React from "react"
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { TimeEntryDocument } from "@/lib/types/document-data.types";
 import { dateToDayString, dateToLocaleString } from "@/lib/date-utils";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 
 interface PDFReportProps {
   timesheetData: TimeEntryDocument[];
 }
 
-const styles = StyleSheet.create({
-  page: { fontSize: 11, paddingTop: 20, paddingLeft: 40, paddingRight: 40, lineHeight: 1.5, flexDirection: 'column' },
-  spaceBetween: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', color: "#3E3E3E" },
-  titleContainer: { flexDirection: 'row', marginTop: 24 },
-  reportTitle: { fontSize: 16, textAlign: 'center' },
-  table: { width: "auto", borderStyle: "solid", borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 },
-  tableRow: { flexDirection: "row" },
-  tableCell: { margin: "auto", marginTop: 5, fontSize: 10 },
-  theader: { marginTop: 20, fontSize: 10, fontWeight: 'bold', paddingTop: 4, paddingLeft: 7, flex: 1, height: 20, backgroundColor: '#DEDEDE', borderColor: 'whitesmoke', borderRightWidth: 1, borderBottomWidth: 1 },
-  theader2: { flex: 2, borderRightWidth: 0, borderBottomWidth: 1 },
-  tbody: { fontSize: 9, paddingTop: 4, paddingLeft: 7, flex: 1, borderColor: 'whitesmoke', borderRightWidth: 1, borderBottomWidth: 1 },
-  tbody2: { flex: 2, borderRightWidth: 1 },
-});
-
 const PDFReport: React.FC<PDFReportProps> = ({ timesheetData }) => {
+  const fromDate = timesheetData[0].dateTime;
+  const toDate = timesheetData[timesheetData.length - 1].dateTime;
   return (
-    <Document>
-      <Page style={styles.page}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.reportTitle}>Timesheet Report</Text>
-        </View>
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <View style={styles.theader2}>
-              <Text style={styles.tableCell}>Date</Text>
-            </View>
-            <View style={styles.theader2}>
-              <Text style={styles.tableCell}>Day</Text>
-            </View>
-            <View style={styles.theader2}>
-              <Text style={styles.tableCell}>Project</Text>
-            </View>
-            <View style={styles.theader2}>
-              <Text style={styles.tableCell}>Hours</Text>
-            </View>
-          </View>
-          {timesheetData.map((entry, index) => (
-            <View style={styles.tableRow} key={index}>
-              <View style={styles.tbody}>
-                <Text style={styles.tableCell}>{dateToLocaleString(entry.dateTime)}</Text>
-              </View>
-              <View style={styles.tbody}>
-                <Text style={styles.tableCell}>{dateToDayString(entry.dateTime)}</Text>
-              </View>
-              <View style={styles.tbody}>
-                <Text style={styles.tableCell}>NHP</Text>
-              </View>
-              <View style={styles.tbody}>
-                <Text style={styles.tableCell}>{entry.hours}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      </Page>
-    </Document>
+    <>
+      <div className="p-40">
+        <div className="flex-row text-2xl p-10">Timesheet for period between {dateToLocaleString(fromDate)} and {dateToLocaleString(toDate)}</div>
+        <Table className="flex-row justify-evenly">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Date</TableHead>
+              <TableHead className="w-[100px]">Day</TableHead>
+              <TableHead className="w-[200px]">Project</TableHead>
+              <TableHead className="w-[100px]">Hours</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {timesheetData.map((data) => (
+              <TableRow key={data.id}>
+                <TableCell className="font-medium">{dateToLocaleString(data.dateTime)}</TableCell>
+                <TableCell>{dateToDayString(data.dateTime)}</TableCell>
+                <TableCell>{"NHP - Web Development"}</TableCell>
+                <TableCell>{data.hours}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }
 

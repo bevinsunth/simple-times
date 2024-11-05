@@ -4,6 +4,7 @@ import * as React from "react"
 import { addDays, format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { DateRange } from "react-day-picker"
+import { usePDF } from 'react-to-pdf';
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,7 +15,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { getDocumentsForDatesBetween } from "@/lib/server/timesheet"
-import { PDFDownloadLink } from "@react-pdf/renderer"
 import PDFReport from '../components/pdfreport'
 
 const Reports = ({
@@ -26,6 +26,7 @@ const Reports = ({
     });
 
     const [timesheetData, setTimesheetData] = React.useState<any[]>([]);
+    const { toPDF, targetRef } = usePDF({ filename: 'report.pdf' });
 
     const OnClick = async (from: Date, to: Date) => {
         const documents = await getDocumentsForDatesBetween(from, to)
@@ -78,12 +79,10 @@ const Reports = ({
             {timesheetData.length > 0 && (
                 <div>
                     <h1>Timesheet Report</h1>
-                    <PDFDownloadLink
-                        document={<PDFReport timesheetData={timesheetData} />}
-                        fileName="Timesheet_Report.pdf"
-                    >
-                        <Button>Download</Button>
-                    </PDFDownloadLink>
+                    <Button onClick={() => toPDF()}>Download PDF</Button>
+                    <div ref={targetRef}>
+                        <PDFReport timesheetData={timesheetData} />
+                    </div>
                 </div>
             )}
         </div>
