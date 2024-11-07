@@ -95,7 +95,7 @@ const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry"
 
 //get start date and end date and populate documents for that date range even when no matching date is found
 export async function getDocumentsForDatesBetweenWithEmptyDates(startDate: Date, endDate: Date
-): Promise<TimeEntryData  []> {
+): Promise<TimeEntryData[]> {
 
   const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
 
