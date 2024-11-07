@@ -22,40 +22,49 @@ interface PDFReportProps {
 
 // PDF styles
 const styles = StyleSheet.create({
-  page: { padding: 30 },
-  title: { fontSize: 24, marginBottom: 20 },
-  table: { display: 'flex', width: 'auto', borderStyle: 'solid', borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 },
+  page: { padding: 30, fontFamily: 'Helvetica' },
+  title: { fontSize: 24, marginBottom: 20, color: '#333333', fontWeight: 'bold' },
+  subtitle: { fontSize: 14, marginBottom: 20, color: '#666666' },
+  table: { display: 'flex', width: 'auto', borderStyle: 'solid', borderColor: '#CCCCCC', borderWidth: 1, borderRightWidth: 0, borderBottomWidth: 0 },
   tableRow: { margin: 'auto', flexDirection: 'row' },
-  tableCol: { width: '50%', borderStyle: 'solid', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 },
-  tableCell: { margin: 'auto', marginTop: 5, fontSize: 10 }
+  tableColHeader: { width: '50%', borderStyle: 'solid', borderColor: '#CCCCCC', borderBottomColor: '#000000', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 },
+  tableCol: { width: '50%', borderStyle: 'solid', borderColor: '#CCCCCC', borderWidth: 1, borderLeftWidth: 0, borderTopWidth: 0 },
+  tableCellHeader: { margin: 'auto', marginTop: 5, marginBottom: 5, fontSize: 12, fontWeight: 'bold', color: '#000000' },
+  tableCell: { margin: 'auto', marginTop: 5, marginBottom: 5, fontSize: 10, color: '#333333' },
+  totals: { marginTop: 30, fontSize: 14, fontWeight: 'bold', color: '#000000' }
 })
 
 // PDF Document component
-export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Timesheet Report</Text>
-      <Text>From: {startDate.toDateString()} To: {endDate.toDateString()}</Text>
-      <View style={styles.table}>
-        <View style={styles.tableRow}>
-          <View style={styles.tableCol}>
-            <Text style={styles.tableCell}>Client</Text>
+export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
+  const totalHours = data.reduce((sum, item) => sum + item.hours, 0);
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <Text style={styles.title}>Timesheet Report</Text>
+        <Text style={styles.subtitle}>From: {format(startDate, "MMMM d, yyyy")} To: {format(endDate, "MMMM d, yyyy")}</Text>
+        <View style={styles.table}>
+          <View style={styles.tableRow}>
+            <View style={styles.tableColHeader}>
+              <Text style={styles.tableCellHeader}>Client</Text>
+            </View>
+            <View style={styles.tableColHeader}>
+              <Text style={styles.tableCellHeader}>Hours</Text>
+            </View>
           </View>
-          <View style={styles.tableCol}>
-            <Text style={styles.tableCell}>Hours</Text>
-          </View>
+          {data.map((item, index) => (
+            <View style={styles.tableRow} key={index}>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{"NHP"}</Text>
+              </View>
+              <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{item.hours === 0 ? "" : item.hours}</Text>
+              </View>
+            </View>
+          ))}
         </View>
-        {data.map((item, index) => (
-          <View style={styles.tableRow} key={index}>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{"NHP"}</Text>
-            </View>
-            <View style={styles.tableCol}>
-              <Text style={styles.tableCell}>{item.hours}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    </Page>
-  </Document>
-)
+        <Text style={styles.totals}>Total Hours: {totalHours}</Text>
+      </Page>
+    </Document>
+  )
+}
