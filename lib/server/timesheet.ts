@@ -1,128 +1,127 @@
-"use server"
+'use server';
 
-import { ID, Query } from "node-appwrite"
+import { ID, Query } from 'node-appwrite';
 
-import type {
-  TimeEntryData,
-  TimeEntryDocument,
-} from "@/lib/types/document-data.types"
+import type { TimeEntryData, TimeEntryDocument } from '@/lib/types/document-data.types';
 
-import { compareDates, formatDateDDMMYYYY, getDateValue, parseDateDDMMYYYY } from "../date-utils"
-import { GetDbOperations } from "./databases"
-import { getLoggedInUser } from "./appwrite"
+import { formatDateDDMMYYYY, getDateValue } from '../date-utils';
+import { GetDbOperations } from './databases';
+import { getLoggedInUser } from './appwrite';
+import { error } from 'console';
 
+export interface TimeEntry {
+  client: string;
+  project: string;
+  hours: string;
+}
 
-export const addOrUpdateWeeklyTimeSheet = async (entries: TimeEntryData[]) => {
+export interface Entries {
+  [date: string]: TimeEntry;
+}
 
+export const saveEntries = async (entries: Entries) => {
   // remove any entries with invalid date or hours value
-    const validEntries = entries.filter((entry) => {
-    const isValidHours = typeof entry.hours === "number" && entry.hours > 0
-    return isValidHours
-    })
-  
-
-  await Promise.all(
-      validEntries.map((entry) => {
-          addOrUpdateTimeEntryDocument(entry)
-      })
-  )
-}
-
-async function addOrUpdateTimeEntryDocument(
-  entry: TimeEntryData
-): Promise<boolean> {
-
-
-const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
-
-
-  const timeEntryDocuments = await timeEntryCollection.query([
-    Query.equal("dateString", entry.dateString),
-  ])
-  const timeEntryDocument = timeEntryDocuments.documents[0]
-
-  const user = await getLoggedInUser()
-  console.log(user)
-
-  try {
-    if (timeEntryDocument) {
-      timeEntryDocument.hours = entry.hours
-      timeEntryDocument.dateString = entry.dateString
-      timeEntryDocument.dateTime = entry.dateTime
-      //Fix empty id
-      timeEntryDocument.userId = user?.$id ?? ""
-      await timeEntryCollection.update(timeEntryDocument.$id, timeEntryDocument)
-      return true
+  const validEntries = Object.keys(entries).reduce((acc, date) => {
+    const entry = entries[date];
+    const isValidHours = !isNaN(parseInt(entry.hours)) && parseInt(entry.hours) > 0;
+    const isValidClient = entry.client.trim() !== '';
+    const isValidProject = entry.project.trim() !== '';
+    if (isValidHours && isValidClient && isValidProject) {
+      acc[date] = {
+        ...entry,
+        hours: parseInt(entry.hours).toString(),
+      };
     }
-    await timeEntryCollection.create(ID.unique(), entry)
-    return true
-  } catch (error) {
-    return false
+    return acc;
+  }, {} as Entries);
+
+  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>('timeEntry');
+  const user = await getLoggedInUser();
+
+  if (user === null) {
+    error('User not logged in');
+    return [];
   }
-}
 
-export async function populateTimeEntryData(
-  dates: Date[]
-): Promise<TimeEntryData[]> {
+  const timeEntryDataArray: TimeEntryData[] = Object.entries(validEntries).map(
+    ([key, entry]: [string, TimeEntry]) => ({
+      date: getDateValue(new Date(key)),
+      client: entry.client,
+      project: entry.project,
+      hours: parseInt(entry.hours),
+      timeEntryIdentifier: getUniqueTimeEntryIdentifier(new Date(key), entry.client, entry.project),
+    }),
+  );
 
-  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
-  
-  const queries = [Query.equal("dateString", dates.map((date) => formatDateDDMMYYYY(date)))]
-  const timeEntryDocuments = await timeEntryCollection.query(queries)
-  console.log(timeEntryDocuments)
-  
-    const timeEntryData = dates.map((date) => {
-        const document = timeEntryDocuments.documents.find((doc) => compareDates(date, parseDateDDMMYYYY(doc.dateString)))
-      return {
-            dateTime: document?.dateTime ?? getDateValue(date),
-            dateString: formatDateDDMMYYYY(date),
-            hours: document ? document.hours : 0,
-        }
-    })
-    return timeEntryData
-}
+  if (timeEntryDataArray.length === 0) {
+    error('No valid entries to save');
+    return;
+  }
 
-export async function getDocumentsForDatesBetween(startDate: Date, endDate: Date
-): Promise<TimeEntryDocument[]> {
+  //get all the matching documents
+  const matchedDocuments = await timeEntryCollection.query([
+    Query.equal('userId', user.$id),
+    Query.or(
+      timeEntryDataArray.map((entry) =>
+        Query.equal('timeEntryIdentifier', entry.timeEntryIdentifier),
+      ),
+    ),
+  ]);
 
-const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
-
-  const timeEntryDocuments = await timeEntryCollection.query([
-    Query.between("dateTime", getDateValue(startDate).toISOString(), getDateValue(endDate).toISOString()),
-  ])
-  return timeEntryDocuments.documents
-}
-
-//get start date and end date and populate documents for that date range even when no matching date is found
-export async function getDocumentsForDatesBetweenWithEmptyDates(startDate: Date, endDate: Date
-): Promise<TimeEntryData[]> {
-
-  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>("timeEntry")
-
-  const timeEntryDocuments = await timeEntryCollection.query([
-    Query.between("dateTime", getDateValue(startDate).toISOString(), getDateValue(endDate).toISOString()),
-  ])
-  const timeEntryData: TimeEntryData[] = []
-
-  let currentDate = startDate
-  while (currentDate <= endDate) {
-    const document = timeEntryDocuments.documents.find((doc) => compareDates(currentDate, parseDateDDMMYYYY(doc.dateString)))
+  //update the matched documents and create new documents for the ones that are not matched
+  const promises = timeEntryDataArray.map(async (entry) => {
+    const document = matchedDocuments.documents.find(
+      (doc) => doc.timeEntryIdentifier === entry.timeEntryIdentifier,
+    );
     if (document) {
-      timeEntryData.push(
-        {
-          dateTime: document.dateTime,
-          dateString: document.dateString,
-          hours: document.hours,
-        }
-      )
+      document.hours = entry.hours;
+      document.date = entry.date;
+      document.client = entry.client;
+      document.project = entry.project;
+      document.userId = user.$id;
+      await timeEntryCollection.update(document.$id, document);
     } else {
-      timeEntryData.push({
-        dateTime: getDateValue(currentDate),
-        dateString: formatDateDDMMYYYY(currentDate),
-        hours: 0,
-      })
+      await timeEntryCollection.create(ID.unique(), { ...entry, userId: user.$id });
     }
-    currentDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000)
+  });
+};
+
+export async function getEntries(dates: Date[]): Promise<Entries> {
+  const timeEntryCollection = await GetDbOperations<TimeEntryDocument>('timeEntry');
+  const user = await getLoggedInUser();
+
+  if (user === null) {
+    error('User not logged in');
+    return {};
   }
-  return timeEntryData
+
+  const timeEntryDocuments = await timeEntryCollection.query([
+    Query.equal('userId', user.$id),
+    Query.or(
+      dates.map((date) => Query.startsWith('timeEntryIdentifier', formatDateDDMMYYYY(date))),
+    ),
+  ]);
+
+  console.log('timeEntryDocuments', timeEntryDocuments);
+
+  const entries: Entries = {};
+
+  timeEntryDocuments.documents.forEach((doc) => {
+    const date = formatDateDDMMYYYY(doc.date);
+    if (!entries[date]) {
+      entries[date] = {
+        client: doc.client,
+        project: doc.project,
+        hours: doc.hours.toString(),
+      };
+    }
+  });
+
+  console.log('entries', entries);
+
+  return entries;
 }
+
+const getUniqueTimeEntryIdentifier = (date: Date, client: string, project: string): string => {
+  return `${formatDateDDMMYYYY(date)}-${client}-${project}`;
+};
