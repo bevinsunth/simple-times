@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
+import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { DropdownSelect } from './dropdown-select';
-import { WeekSelector } from './week-selector';
 import { Entries, TimeEntry } from '@/lib/server/timesheet';
 import { formatDateDDMMYYYY } from '@/lib/date-utils';
 
@@ -14,13 +13,6 @@ export interface Option {
   value: string;
   label: string;
 }
-
-// Placeholder for actual API call
-const saveTimesheet = async (data: Entries): Promise<void> => {
-  console.log('Saving timesheet:', data);
-  // Implement actual API call here
-  return new Promise((resolve) => setTimeout(resolve, 1000));
-};
 
 interface TimesheetFormProps {
   week: Date[];
