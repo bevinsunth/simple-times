@@ -196,39 +196,41 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                       )}
                     />
                     <div className="flex items-end">
-                      {index === form.watch(dateKey).length - 1 ? (
+                      {index > 0 && (
                         <Button
                           type="button"
-                          variant="outline"
-                          onClick={() =>
-                            form.setValue(dateKey, [
-                              ...form.watch(dateKey),
-                              { client: '', project: '', hours: '' },
-                            ])
-                          }
-                        >
-                          <PlusCircle className="w-4 h-4 mr-2" />
-                          Add
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="outline"
+                          variant="ghost"
+                          size="icon"
                           onClick={() => {
-                            const currentEntries = form.watch(dateKey);
+                            const currentEntries = form.getValues(dateKey);
                             form.setValue(
                               dateKey,
                               currentEntries.filter((_, i) => i !== index),
                             );
                           }}
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Remove
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
                   </div>
                 ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const dateKey = formatDateDDMMYYYY(date);
+                    const currentEntries = form.getValues(dateKey) || [];
+                    form.setValue(dateKey, [
+                      ...currentEntries,
+                      { client: '', project: '', hours: '' },
+                    ]);
+                  }}
+                  className="mt-2 w-full"
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Entry
+                </Button>
               </CardContent>
             </Card>
           );
