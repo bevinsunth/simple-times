@@ -1,64 +1,50 @@
-"use client"
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { signUpWithGithub } from "@/lib/server/auth"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { signUpWithGithub } from '@/lib/server/auth';
 
 export default function LoginForm() {
   const formSchema = z.object({
     email: z.string().email({
-      message: "Uh oh! This email address is invalid.",
+      message: 'Uh oh! This email address is invalid.',
     }),
     password: z
       .string()
       .min(8, {
-        message: "Password must be at least 8 characters.",
+        message: 'Password must be at least 8 characters.',
       })
       .regex(/[A-Z]/, {
-        message: "Password must contain at least one uppercase letter.",
+        message: 'Password must contain at least one uppercase letter.',
       })
       .regex(/[a-z]/, {
-        message: "Password must contain at least one lowercase letter.",
+        message: 'Password must contain at least one lowercase letter.',
       })
       .regex(/[0-9]/, {
-        message: "Password must contain at least one number.",
+        message: 'Password must contain at least one number.',
       }),
-  })
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  })
+  });
 
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">Sign Up</CardTitle>
-        <CardDescription>
-          Enter your information to create an account
-        </CardDescription>
+        <CardDescription>Enter your information to create an account</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -73,12 +59,7 @@ export default function LoginForm() {
                     <div className="grid gap-2">
                       <FormLabel htmlFor="email">Email</FormLabel>
                       <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="mary@jane.com"
-                          {...field}
-                          required
-                        />
+                        <Input type="email" placeholder="mary@jane.com" {...field} required />
                       </FormControl>
                     </div>
                     <div className="grid gap-2">
@@ -100,14 +81,14 @@ export default function LoginForm() {
                     type="button"
                     variant="outline"
                     onClick={async () => {
-                      await signUpWithGithub()
+                      await signUpWithGithub();
                     }}
                     className="w-full"
                   >
                     Sign up with GitHub
                   </Button>
                   <div className="mt-4 text-center text-sm">
-                    Already have an account?{" "}
+                    Already have an account?{' '}
                     <Link href="#" className="underline">
                       Sign in
                     </Link>
@@ -119,5 +100,5 @@ export default function LoginForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }

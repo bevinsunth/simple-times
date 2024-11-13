@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { format } from 'date-fns';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { PlusCircle, Trash2 } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -16,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -23,9 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TimeSheetFormEntry } from '@/lib/server/timesheet';
 import { formatDateDDMMYYYY } from '@/lib/date-utils';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
+
 const entrySchema = z.object({
   client: z.string(),
   project: z.string(),
@@ -36,7 +38,9 @@ const entrySchema = z.object({
     .refine((val) => !val || /^\d+(\.\d{1,2})?$/.test(val), 'Invalid hours format')
     .refine(
       (val) => {
-        if (!val) return true;
+        if (!val) {
+          return true;
+        }
         const num = parseFloat(val);
         return !isNaN(num) && num > 0 && num <= 24;
       },

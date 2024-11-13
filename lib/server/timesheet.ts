@@ -1,12 +1,8 @@
 'use server';
 
-import { ID, Query } from 'node-appwrite';
+import { error } from 'console';
 
-import type {
-  TimeEntryData,
-  TimeEntryDocument,
-  TimeEntryDocumentData,
-} from '@/lib/types/document-data.types';
+import { ID, Query } from 'node-appwrite';
 
 import {
   dateToISOString,
@@ -14,9 +10,15 @@ import {
   getDateValue,
   parseDateDDMMYYYY,
 } from '../date-utils';
-import { GetDbOperations } from './databases';
+
 import { getLoggedInUser } from './appwrite';
-import { error } from 'console';
+import { GetDbOperations } from './databases';
+
+import type {
+  TimeEntryData,
+  TimeEntryDocument,
+  TimeEntryDocumentData,
+} from '@/lib/types/document-data.types';
 
 export interface TimeSheetFormEntry {
   date: string;

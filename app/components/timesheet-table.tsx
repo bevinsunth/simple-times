@@ -1,14 +1,13 @@
-"use client"
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Clock } from "lucide-react"
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { date, z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Clock } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -16,8 +15,8 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -25,87 +24,86 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { dateToDayString, dateToLocaleString, getDateValue, parseDateDDMMYYYY } from "@/lib/date-utils"
-import { addOrUpdateWeeklyTimeSheet } from "@/lib/server/timesheet"
-import type { TimeEntryData } from "@/lib/types/document-data.types"
+} from '@/components/ui/table';
+import { dateToDayString, dateToLocaleString, parseDateDDMMYYYY } from '@/lib/date-utils';
+
+import type { TimeEntryData } from '@/lib/types/document-data.types';
+import type React from 'react';
 
 export interface TimesheetTableProps {
-  activeDates: Date[],
-  timeEntryData: TimeEntryData[]
+  activeDates: Date[];
+  timeEntryData: TimeEntryData[];
 }
 
 const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProps) => {
-
-
   const createFormSchema = (dates: TimeEntryData[]) => {
     const baseSchema = z.union([
       z.coerce
         .number({
-          message: "Please enter a valid number",
+          message: 'Please enter a valid number',
         })
         .positive({
-          message: "Please enter a positive number",
+          message: 'Please enter a positive number',
         })
         .lte(24, {
-          message: "Please enter a number smaller than 24",
+          message: 'Please enter a number smaller than 24',
         })
         .optional(),
-      z.string().refine((val) => val === "", {
-        message: "Please enter a valid number or leave it empty",
-      })
-    ])
+      z.string().refine((val) => val === '', {
+        message: 'Please enter a valid number or leave it empty',
+      }),
+    ]);
 
     return z.object(
       dates.reduce<Record<string, typeof baseSchema>>((schema, timeEntryData) => {
-        schema[timeEntryData.dateString] = baseSchema
-        return schema
-      }, {})
-    )
-  }
+        schema[timeEntryData.dateString] = baseSchema;
+        return schema;
+      }, {}),
+    );
+  };
 
   const form = useForm({
     resolver: zodResolver(createFormSchema(props.timeEntryData)),
-    mode: "all",
+    mode: 'all',
     defaultValues: props.timeEntryData.reduce<Record<string, string>>(
       (values: Record<string, string>, timeEntry) => {
-        values[timeEntry.dateString] = timeEntry.hours === 0 ? "" : timeEntry.hours.toString()
+        values[timeEntry.dateString] = timeEntry.hours === 0 ? '' : timeEntry.hours.toString();
         return values;
       },
-      {}
+      {},
     ),
   });
 
-  console.log(form)
+  console.log(form);
 
   const onSubmit = async (data: Record<string, string>) => {
     const result = Object.entries(data).reduce<TimeEntryData[]>(
       (acc, [key, value]: [string, string]) => {
-        const hours = parseFloat(value)
+        const hours = parseFloat(value);
         if (!Number.isNaN(hours) && hours > 0) {
           acc.push({
             dateString: key,
             dateTime: parseDateDDMMYYYY(key),
             hours,
-          })
+          });
         }
-        return acc
+        return acc;
       },
-      []
-    )
-    await addOrUpdateWeeklyTimeSheet(result)
-  }
+      [],
+    );
+    await addOrUpdateWeeklyTimeSheet(result);
+  };
 
   const timesheetProps =
     props.activeDates.length > 0
       ? {
-        title: `Week starting on: ${props.activeDates[0] ? dateToDayString(props.activeDates[0]) ?? "N/A" : "N/A"}`,
-        description: `Period between ${props.activeDates[0] ? dateToLocaleString(props.activeDates[0]) : "N/A"} and ${props.activeDates[6] ? dateToLocaleString(props.activeDates[6]) : "N/A"}`,
-      }
+          title: `Week starting on: ${props.activeDates[0] ? (dateToDayString(props.activeDates[0]) ?? 'N/A') : 'N/A'}`,
+          description: `Period between ${props.activeDates[0] ? dateToLocaleString(props.activeDates[0]) : 'N/A'} and ${props.activeDates[6] ? dateToLocaleString(props.activeDates[6]) : 'N/A'}`,
+        }
       : {
-        title: "Week starting on: N/A",
-        description: "Period between N/A and N/A",
-      }
+          title: 'Week starting on: N/A',
+          description: 'Period between N/A and N/A',
+        };
 
   return (
     <Card className="container mx-auto px-4">
@@ -124,16 +122,12 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
             <TableHeader>
               <TableRow key="row-header">
                 {props.timeEntryData.map((data, key) => {
-                  return (
-                    <TableHead key={key}> {dateToLocaleString(data.dateTime)} </TableHead>
-                  )
+                  return <TableHead key={key}> {dateToLocaleString(data.dateTime)} </TableHead>;
                 })}
               </TableRow>
               <TableRow key="row-header">
                 {props.timeEntryData.map((data, key) => {
-                  return (
-                    <TableHead key={key}> {dateToDayString(data.dateTime)} </TableHead>
-                  )
+                  return <TableHead key={key}> {dateToDayString(data.dateTime)} </TableHead>;
                 })}
               </TableRow>
             </TableHeader>
@@ -156,19 +150,20 @@ const TimesheetTable: React.FC<TimesheetTableProps> = (props: TimesheetTableProp
                         )}
                       />
                     </TableCell>
-                  )
+                  );
                 })}
               </TableRow>
             </TableBody>
           </Table>
           <div className="flex justify-center p-5">
-            <Button size={"lg"} className="bg-primary" onClick={form.handleSubmit(onSubmit)}>Submit</Button>
+            <Button size="lg" className="bg-primary" onClick={form.handleSubmit(onSubmit)}>
+              Submit
+            </Button>
           </div>
         </form>
       </Form>
     </Card>
-  )
-}
+  );
+};
 
-
-export { TimesheetTable }
+export { TimesheetTable };

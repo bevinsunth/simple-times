@@ -1,22 +1,23 @@
-import type {} from "@redux-devtools/extension" // required for devtools typing
-import { create } from "zustand"
-import { devtools, persist } from "zustand/middleware"
+import type {} from '@redux-devtools/extension'; // required for devtools typing
 
-import type { SheetDate } from "@/types"
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+import type { SheetDate } from '@/types';
 
 interface WeeklySheetState {
-  activeSheetDates: SheetDate[]
-  addSheetDates: (dates: SheetDate[]) => void
-  timesheets: DayTimeSheet[]
-  addTimeSheets: (daySheets: DayTimeSheet[]) => void
+  activeSheetDates: SheetDate[];
+  addSheetDates: (dates: SheetDate[]) => void;
+  timesheets: DayTimeSheet[];
+  addTimeSheets: (daySheets: DayTimeSheet[]) => void;
 }
 
 interface DayTimeSheet {
-  date: Date
-  client: string
-  project: string
-  hours: number
-  notes: string
+  date: Date;
+  client: string;
+  project: string;
+  hours: number;
+  notes: string;
 }
 
 export const useSheetStore = create<WeeklySheetState>()(
@@ -35,8 +36,8 @@ export const useSheetStore = create<WeeklySheetState>()(
           })),
       }),
       {
-        name: "timesheet-storage",
-      }
-    )
-  )
-)
+        name: 'timesheet-storage',
+      },
+    ),
+  ),
+);

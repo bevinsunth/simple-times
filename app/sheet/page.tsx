@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
 import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
-import { Entries, saveEntries, getEntries } from '@/lib/server/timesheet';
-import { WeekSelector } from '../components/week-selector';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { TimesheetForm } from '../components/weeky-timesheet-form';
 import { se } from 'date-fns/locale';
+import { useEffect, useState } from 'react';
+
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { type Entries, saveEntries, getEntries } from '@/lib/server/timesheet';
+
+import { WeekSelector } from '../components/week-selector';
+import { TimesheetForm } from '../components/weeky-timesheet-form';
+
+import type React from 'react';
 
 interface Option {
   value: string;

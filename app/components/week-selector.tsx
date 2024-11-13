@@ -1,11 +1,18 @@
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { addWeeks, subWeeks, format } from 'date-fns'
+import { addWeeks, subWeeks, format } from 'date-fns';
+
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface WeekSelectorProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
-}   
+}
 
 const WeekSelector: React.FC<WeekSelectorProps> = ({ currentDate, onDateChange }) => {
   return (
@@ -20,18 +27,18 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({ currentDate, onDateChange }
         </SelectTrigger>
         <SelectContent>
           {Array.from({ length: 52 }, (_, i) => {
-            const date = subWeeks(new Date(), i)
+            const date = subWeeks(new Date(), i);
             return (
               <SelectItem key={i} value={format(date, 'yyyy-MM-dd')}>
                 {format(date, 'MMM d, yyyy')}
               </SelectItem>
-            )
+            );
           })}
         </SelectContent>
       </Select>
       <Button onClick={() => onDateChange(addWeeks(currentDate, 1))}>Next Week</Button>
     </div>
-  )
-}
+  );
+};
 
-export { WeekSelector }
+export { WeekSelector };
