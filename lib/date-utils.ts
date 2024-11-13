@@ -12,7 +12,6 @@ export const getBrowserLocale = (): string => {
   return navigator.language || 'en-AU';
 };
 
-
 /**
  * Convert a date to a day string (e.g., "Monday") using the browser's locale.
  * @param date - The date to convert.
@@ -85,7 +84,7 @@ export function formatDateDDMMYYYY(date: Date): string {
  * @returns The Date object.
  */
 export function parseDateDDMMYYYY(dateString: string): Date {
-    return parse(dateString, 'ddMMyyyy', new Date());
+  return parse(dateString, 'ddMMyyyy', new Date());
 }
 
 /**
@@ -107,3 +106,11 @@ export const compareDates = (date1: Date, date2: Date): boolean => {
   return isEqual(getDateValue(date1), getDateValue(date2));
 };
 
+/**
+ * Convert a date to an ISO string.
+ * @param date - The date to convert.
+ * @returns The ISO string.
+ */
+export const dateToISOString = (date: Date): string => {
+  return date.toISOString();
+};
