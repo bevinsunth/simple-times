@@ -14,7 +14,7 @@ export async function signUpWithGithub() {
   const redirectUrl = await account.createOAuth2Token(
     OAuthProvider.Github,
     `${origin}/oauth`,
-    `${origin}/signup`,
+    `${origin}/signup`
   );
 
   return redirect(redirectUrl);

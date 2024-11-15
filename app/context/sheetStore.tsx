@@ -23,21 +23,21 @@ interface DayTimeSheet {
 export const useSheetStore = create<WeeklySheetState>()(
   devtools(
     persist(
-      (set) => ({
+      set => ({
         activeSheetDates: [],
-        addSheetDates: (dates) =>
-          set((state) => ({
+        addSheetDates: dates =>
+          set(state => ({
             activeSheetDates: dates,
           })),
         timesheets: [],
-        addTimeSheets: (daySheets) =>
-          set((state) => ({
+        addTimeSheets: daySheets =>
+          set(state => ({
             timesheets: [...state.timesheets, ...daySheets],
           })),
       }),
       {
         name: 'timesheet-storage',
-      },
-    ),
-  ),
+      }
+    )
+  )
 );

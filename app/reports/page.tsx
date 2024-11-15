@@ -1,6 +1,6 @@
 'use client';
 
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -8,7 +8,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { getDocumentsForDatesBetweenWithEmptyDates } from '@/lib/server/timesheet';
 import { type TimeEntryData } from '@/lib/types/document-data.types';
 
@@ -30,8 +34,20 @@ export default function TimesheetReport() {
   const [reportData, setReportData] = useState<TimeEntryData[]>([]);
 
   const generateReport = async () => {
-    const data = await await getDocumentsForDatesBetweenWithEmptyDates(startDate, endDate);
-    setReportData(data);
+    try {
+      const data = await getDocumentsForDatesBetweenWithEmptyDates(
+        startDate,
+        endDate
+      );
+      if (!data) {
+        setReportData([]);
+        return;
+      }
+      setReportData(data as TimeEntryData[]);
+    } catch (error) {
+      console.error('Failed to generate report:', error);
+      setReportData([]);
+    }
   };
 
   return (
@@ -43,59 +59,77 @@ export default function TimesheetReport() {
         <div className="space-y-4">
           <div className="flex justify-between space-x-4">
             <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Date
+              </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
                     className={`w-full justify-start text-left font-normal ${!startDate && 'text-muted-foreground'}`}
+                    variant="outline"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
+                    {startDate ? (
+                      format(startDate, 'PPP')
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
+                    initialFocus
                     mode="single"
                     selected={startDate}
-                    onSelect={(date) => date && setStartDate(date)}
-                    initialFocus
+                    onSelect={date => date && setStartDate(date)}
                   />
                 </PopoverContent>
               </Popover>
             </div>
             <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Date
+              </label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
                     className={`w-full justify-start text-left font-normal ${!endDate && 'text-muted-foreground'}`}
+                    variant="outline"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
+                    {endDate ? (
+                      format(endDate, 'PPP')
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
+                    initialFocus
                     mode="single"
                     selected={endDate}
-                    onSelect={(date) => date && setEndDate(date)}
-                    initialFocus
+                    onSelect={date => date && setEndDate(date)}
                   />
                 </PopoverContent>
               </Popover>
             </div>
           </div>
-          <Button onClick={generateReport} className="w-full">
+          <Button className="w-full" onClick={generateReport}>
             Generate Report
           </Button>
-          {reportData && (
+          {reportData.length > 0 && (
             <PDFDownloadLink
-              document={<TimesheetPDF data={reportData} startDate={startDate} endDate={endDate} />}
               fileName="timesheet_report.pdf"
+              document={
+                <TimesheetPDF
+                  data={reportData}
+                  endDate={endDate}
+                  startDate={startDate}
+                />
+              }
             >
-              <Button className="w-full"></Button>
+              <Button className="w-full">Download PDF</Button>
             </PDFDownloadLink>
           )}
         </div>

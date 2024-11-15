@@ -1,0 +1,15 @@
+.env
+.env.*
+node_modules
+.next
+build
+dist
+coverage
+public
+.gitignore
+.prettierignore
+.eslintignore
+.npmrc
+*.log
+*.lock
+.DS_Store 

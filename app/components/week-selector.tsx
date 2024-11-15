@@ -14,13 +14,18 @@ interface WeekSelectorProps {
   onDateChange: (date: Date) => void;
 }
 
-const WeekSelector: React.FC<WeekSelectorProps> = ({ currentDate, onDateChange }) => {
+const WeekSelector: React.FC<WeekSelectorProps> = ({
+  currentDate,
+  onDateChange,
+}) => {
   return (
     <div className="flex items-center justify-between mb-4">
-      <Button onClick={() => onDateChange(subWeeks(currentDate, 1))}>Previous Week</Button>
+      <Button onClick={() => onDateChange(subWeeks(currentDate, 1))}>
+        Previous Week
+      </Button>
       <Select
         value={format(currentDate, 'yyyy-MM-dd')}
-        onValueChange={(value) => onDateChange(new Date(value))}
+        onValueChange={(value: string) => onDateChange(new Date(value))}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a week" />
@@ -36,7 +41,9 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({ currentDate, onDateChange }
           })}
         </SelectContent>
       </Select>
-      <Button onClick={() => onDateChange(addWeeks(currentDate, 1))}>Next Week</Button>
+      <Button onClick={() => onDateChange(addWeeks(currentDate, 1))}>
+        Next Week
+      </Button>
     </div>
   );
 };

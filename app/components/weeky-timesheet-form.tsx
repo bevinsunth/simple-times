@@ -3,7 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { PlusCircle, Trash2 } from 'lucide-react';
-import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -34,10 +33,13 @@ const entrySchema = z.object({
   hours: z
     .string()
     .optional()
-    .transform((val) => val?.trim())
-    .refine((val) => !val || /^\d+(\.\d{1,2})?$/.test(val), 'Invalid hours format')
+    .transform(val => val?.trim())
     .refine(
-      (val) => {
+      val => !val || /^\d+(\.\d{1,2})?$/.test(val),
+      'Invalid hours format'
+    )
+    .refine(
+      val => {
         if (!val) {
           return true;
         }
@@ -46,7 +48,7 @@ const entrySchema = z.object({
       },
       {
         message: 'Hours must be between 0 and 24',
-      },
+      }
     ),
 });
 
@@ -69,24 +71,32 @@ interface TimesheetFormProps {
   projects: Option[];
 }
 
-const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: TimesheetFormProps) => {
-  console.log('initial entries', initialEntries);
+const TimesheetForm = ({
+  week,
+  onSave,
+  initialEntries,
+  clients,
+  projects,
+}: TimesheetFormProps) => {
   // First, prepare initial values including empty entries for each day
   const initialFormValues = {} as TimesheetSchema;
 
   // Initialize all week dates first
-  week.forEach((date) => {
+  week.forEach(date => {
     const dateKey = formatDateDDMMYYYY(date);
     initialFormValues[dateKey] = [{ client: '', project: '', hours: '' }];
   });
 
   // Then overlay existing entries
-  initialEntries.forEach((entry) => {
+  initialEntries.forEach(entry => {
     if (!initialFormValues[entry.date]) {
       initialFormValues[entry.date] = []; // Ensure array exists
     }
 
-    if (initialFormValues[entry.date].length === 1 && !initialFormValues[entry.date][0].client) {
+    if (
+      initialFormValues[entry.date].length === 1 &&
+      !initialFormValues[entry.date][0].client
+    ) {
       // Replace the empty entry
       initialFormValues[entry.date] = [
         {
@@ -110,25 +120,22 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
     defaultValues: initialFormValues,
   });
 
-  const onSubmit = async (data: TimesheetSchema) => {
+  const onSubmit = (data: TimesheetSchema): void => {
     const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
-      dayEntries.map((entry) => ({
+      dayEntries.map(entry => ({
         date,
         client: entry.client,
         project: entry.project,
         hours: entry.hours ?? '',
-      })),
+      }))
     );
-    console.log('entries', entries);
     onSave(entries);
   };
 
-  console.log('form values', form.watch());
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {week.map((date) => {
+      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        {week.map(date => {
           const dateKey = formatDateDDMMYYYY(date);
           return (
             <Card key={dateKey}>
@@ -144,15 +151,21 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Client</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            defaultValue={field.value}
+                            onValueChange={field.onChange}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select client" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {clients.map((client) => (
-                                <SelectItem key={client.value} value={client.value}>
+                              {clients.map(client => (
+                                <SelectItem
+                                  key={client.value}
+                                  value={client.value}
+                                >
                                   {client.label}
                                 </SelectItem>
                               ))}
@@ -168,15 +181,21 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Project</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select
+                            defaultValue={field.value}
+                            onValueChange={field.onChange}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select project" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {projects.map((project) => (
-                                <SelectItem key={project.value} value={project.value}>
+                              {projects.map(project => (
+                                <SelectItem
+                                  key={project.value}
+                                  value={project.value}
+                                >
                                   {project.label}
                                 </SelectItem>
                               ))}
@@ -193,7 +212,12 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                         <FormItem>
                           <FormLabel>Hours</FormLabel>
                           <FormControl>
-                            <Input {...field} type="number" step="0.01" placeholder="Hours" />
+                            <Input
+                              {...field}
+                              placeholder="Hours"
+                              step="0.01"
+                              type="number"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -202,14 +226,14 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                     <div className="flex items-end">
                       {index > 0 && (
                         <Button
+                          size="icon"
                           type="button"
                           variant="ghost"
-                          size="icon"
                           onClick={() => {
                             const currentEntries = form.getValues(dateKey);
                             form.setValue(
                               dateKey,
-                              currentEntries.filter((_, i) => i !== index),
+                              currentEntries.filter((_, i) => i !== index)
                             );
                           }}
                         >
@@ -220,6 +244,7 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                   </div>
                 ))}
                 <Button
+                  className="mt-2 w-full"
                   type="button"
                   variant="outline"
                   onClick={() => {
@@ -230,7 +255,6 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
                       { client: '', project: '', hours: '' },
                     ]);
                   }}
-                  className="mt-2 w-full"
                 >
                   <PlusCircle className="w-4 h-4 mr-2" />
                   Add Entry
@@ -239,7 +263,7 @@ const TimesheetForm = ({ week, onSave, initialEntries, clients, projects }: Time
             </Card>
           );
         })}
-        <Button type="submit" className="w-full">
+        <Button className="w-full" type="submit">
           Save Timesheet
         </Button>
       </form>

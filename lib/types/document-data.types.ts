@@ -2,7 +2,10 @@ import type { Models } from 'node-appwrite';
 
 export type TimeEntryDocument = Models.Document & ExtendedData & TimeEntryData;
 
-export type TimeEntryDocumentData = Omit<TimeEntryDocument, keyof Models.Document>;
+export type TimeEntryDocumentData = Omit<
+  TimeEntryDocument,
+  keyof Models.Document
+>;
 
 interface ExtendedData {
   userId: string;

@@ -2,6 +2,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
+
 import { type TimeEntryData } from '@/lib/types/document-data.types';
 
 interface PDFReportProps {
@@ -13,7 +14,12 @@ interface PDFReportProps {
 // PDF styles
 const styles = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Helvetica' },
-  title: { fontSize: 24, marginBottom: 20, color: '#333333', fontWeight: 'bold' },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    color: '#333333',
+    fontWeight: 'bold',
+  },
   subtitle: { fontSize: 14, marginBottom: 20, color: '#666666' },
   table: {
     display: 'flex',
@@ -50,12 +56,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
-  tableCell: { margin: 'auto', marginTop: 5, marginBottom: 5, fontSize: 10, color: '#333333' },
+  tableCell: {
+    margin: 'auto',
+    marginTop: 5,
+    marginBottom: 5,
+    fontSize: 10,
+    color: '#333333',
+  },
   totals: { marginTop: 30, fontSize: 14, fontWeight: 'bold', color: '#000000' },
 });
 
 // PDF Document component
-export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
+const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
   const totalHours = data.reduce((sum, item) => sum + item.hours, 0);
 
   return (
@@ -63,7 +75,8 @@ export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>Timesheet Report</Text>
         <Text style={styles.subtitle}>
-          From: {format(startDate, 'MMMM d, yyyy')} To: {format(endDate, 'MMMM d, yyyy')}
+          From: {format(startDate, 'MMMM d, yyyy')} To:{' '}
+          {format(endDate, 'MMMM d, yyyy')}
         </Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
@@ -75,12 +88,14 @@ export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
             </View>
           </View>
           {data.map((item, index) => (
-            <View style={styles.tableRow} key={index}>
+            <View key={index} style={styles.tableRow}>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>NHP</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{item.hours === 0 ? '' : item.hours}</Text>
+                <Text style={styles.tableCell}>
+                  {item.hours === 0 ? '' : item.hours}
+                </Text>
               </View>
             </View>
           ))}
@@ -90,3 +105,5 @@ export const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
     </Document>
   );
 };
+
+export default TimesheetPDF;

@@ -1,6 +1,22 @@
-import { format, parseISO, startOfWeek, addDays, startOfDay, isEqual, parse } from 'date-fns';
+import {
+  format,
+  parseISO,
+  startOfWeek,
+  addDays,
+  startOfDay,
+  isEqual,
+  parse,
+} from 'date-fns';
 
-const DaysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DaysOfWeek = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
 import { enAU } from 'date-fns/locale';
 
@@ -18,18 +34,17 @@ export const getBrowserLocale = (): string => {
  * @returns The day string.
  */
 export const dateToDayString = (date: Date): string => {
-  const locale = getBrowserLocale();
   return format(date, 'EEEE', { locale: enAU });
 };
 
 /**
- * Convert a date to a locale string using the browser's locale.
+ * Convert a date to a locale string.
  * @param date - The date to convert.
+ * @param locale - The locale to use for formatting.
  * @returns The locale date string.
  */
-export const dateToLocaleString = (date: Date): string => {
-  const locale = getBrowserLocale();
-  return format(date, 'P', { locale: enAU });
+export const dateToLocaleString = (date: Date, locale = enAU): string => {
+  return format(date, 'P', { locale });
 };
 
 /**
@@ -61,16 +76,6 @@ export function timestampStringToDate(timestampString: string): Date {
 }
 
 /**
- * Convert a date to a locale string.
- * @param date - The date to convert.
- * @param locale - The locale to use for formatting.
- * @returns The locale date string.
-export const dateToLocaleString = (date: Date, locale = enAU): string => {
-  return format(date, 'P', { locale });
-};
-};
-
-/**
  * Format a date as a string in DDMMYYYY format.
  * @param date - The date to format.
  * @returns The formatted date string.
@@ -78,6 +83,7 @@ export const dateToLocaleString = (date: Date, locale = enAU): string => {
 export function formatDateDDMMYYYY(date: Date): string {
   return format(date, 'ddMMyyyy');
 }
+
 /**
  * Convert a date string in DDMMYYYY format back to a Date object.
  * @param dateString - The date string in DDMMYYYY format.

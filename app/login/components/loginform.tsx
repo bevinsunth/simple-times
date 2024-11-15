@@ -6,8 +6,20 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { signUpWithGithub } from '@/lib/server/auth';
 
@@ -44,52 +56,59 @@ export default function LoginForm() {
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">Sign Up</CardTitle>
-        <CardDescription>Enter your information to create an account</CardDescription>
+        <CardDescription>
+          Enter your information to create an account
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form>
             <FormField
+              key="email"
               control={form.control}
               name="email"
-              key="email"
               render={({ field }) => (
                 <FormItem>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <FormLabel htmlFor="email">Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="mary@jane.com" {...field} required />
+                        <Input
+                          placeholder="mary@jane.com"
+                          type="email"
+                          {...field}
+                          required
+                        />
                       </FormControl>
                     </div>
                     <div className="grid gap-2">
                       <FormLabel htmlFor="password">Password</FormLabel>
                       <FormControl>
                         <Input
-                          type="password"
                           placeholder="Your strong password."
+                          type="password"
                           {...field}
                           required
                         />
                       </FormControl>
                     </div>
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button className="w-full" type="submit">
                     Create an account
                   </Button>
                   <Button
+                    className="w-full"
                     type="button"
                     variant="outline"
                     onClick={async () => {
                       await signUpWithGithub();
                     }}
-                    className="w-full"
                   >
                     Sign up with GitHub
                   </Button>
                   <div className="mt-4 text-center text-sm">
                     Already have an account?{' '}
-                    <Link href="#" className="underline">
+                    <Link className="underline" href="#">
                       Sign in
                     </Link>
                   </div>

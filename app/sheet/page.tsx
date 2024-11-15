@@ -64,11 +64,11 @@ const TimeSheet = () => {
         <SkeletonLoader />
       ) : (
         <TimesheetForm
+          clients={clients}
+          initialEntries={entries}
+          projects={projects}
           week={weekDays}
           onSave={handleSave}
-          initialEntries={entries}
-          clients={clients}
-          projects={projects}
         />
       )}
     </div>

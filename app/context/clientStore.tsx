@@ -13,21 +13,21 @@ interface clientState {
 const useClientStore = create<clientState>()(
   devtools(
     persist(
-      (set) => ({
+      set => ({
         clients: [],
         projects: [],
-        addclient: (client) =>
-          set((state) => ({
+        addclient: client =>
+          set(state => ({
             clients: [...state.clients, client],
           })),
-        addProject: (project) =>
-          set((state) => ({
+        addProject: project =>
+          set(state => ({
             projects: [...state.projects, project],
           })),
       }),
       {
         name: 'client-storage',
-      },
-    ),
-  ),
+      }
+    )
+  )
 );
