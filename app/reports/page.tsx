@@ -14,9 +14,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { getEntries } from '@/lib/server/timesheet';
-import { type TimeSheetFormEntry } from '@/lib/types/document-data.types';
-
-import { TimesheetPDF } from '../components/timesheet-pdf';
+import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
+import TimesheetPDF from '@/app/components/timesheet-pdf';
+import { DatePickerWithRange } from '../components/date-range-selector';
+import { DateRange } from 'react-day-picker';
+import { cn } from '@/lib/utils';
 
 // Simulated server action (in a real app, this would be in a separate file)
 async function fetchTimesheetData(startDate: Date, endDate: Date) {
@@ -27,6 +29,55 @@ async function fetchTimesheetData(startDate: Date, endDate: Date) {
     { client: 'Client C', hours: 8 },
   ];
 }
+
+const DatePicker = ({
+  date,
+  setDate,
+}: {
+  date: DateRange | undefined;
+  setDate: (date: DateRange | undefined) => void;
+}) => {
+  return (
+    <div className="grid gap-2">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            variant={'outline'}
+            className={cn(
+              'w-[300px] justify-start text-left font-normal',
+              !date && 'text-muted-foreground'
+            )}
+          >
+            <CalendarIcon />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, 'LLL dd, y')} -{' '}
+                  {format(date.to, 'LLL dd, y')}
+                </>
+              ) : (
+                format(date.from, 'LLL dd, y')
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={setDate}
+            numberOfMonths={2}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
 
 export default function TimesheetReport() {
   const [startDate, setStartDate] = useState(new Date());
@@ -48,7 +99,7 @@ export default function TimesheetReport() {
         setReportData([]);
         return;
       }
-      setReportData(data as TimeSheetFormEntry[]);
+      setReportData(data);
     } catch (error) {
       console.error('Failed to generate report:', error);
       setReportData([]);
@@ -62,64 +113,13 @@ export default function TimesheetReport() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex justify-between space-x-4">
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className={`w-full justify-start text-left font-normal ${!startDate && 'text-muted-foreground'}`}
-                    variant="outline"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? (
-                      format(startDate, 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    initialFocus
-                    mode="single"
-                    selected={startDate}
-                    onSelect={date => date && setStartDate(date)}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                End Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    className={`w-full justify-start text-left font-normal ${!endDate && 'text-muted-foreground'}`}
-                    variant="outline"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? (
-                      format(endDate, 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    initialFocus
-                    mode="single"
-                    selected={endDate}
-                    onSelect={date => date && setEndDate(date)}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          <DatePicker
+            date={{ from: startDate, to: endDate }}
+            setDate={date => {
+              setStartDate(date?.from ?? new Date());
+              setEndDate(date?.to ?? new Date());
+            }}
+          />
           <Button className="w-full" onClick={() => void generateReport()}>
             Generate Report
           </Button>
