@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: 'Login to your account',
 };
 
-export default function LoginPage() {
+export default function LoginPage(): JSX.Element {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-[380px]">

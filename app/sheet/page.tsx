@@ -9,6 +9,7 @@ import { type Entries, saveEntries, getEntries } from '@/lib/server/timesheet';
 
 import { WeekSelector } from '../components/week-selector';
 import { TimesheetForm } from '../components/weeky-timesheet-form';
+import { Sidebar } from '../components/sidebar';
 
 import type React from 'react';
 
@@ -57,20 +58,28 @@ const TimeSheet = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Weekly Timesheet</h1>
-      <WeekSelector currentDate={currentDate} onDateChange={setCurrentDate} />
-      {isLoading ? (
-        <SkeletonLoader />
-      ) : (
-        <TimesheetForm
-          clients={clients}
-          initialEntries={entries}
-          projects={projects}
-          week={weekDays}
-          onSave={handleSave}
-        />
-      )}
+    <div className="flex">
+      <Sidebar className="w-64 border-r" />
+      <div className="flex-1">
+        <div className="container p-4">
+          <h1 className="text-2xl font-bold mb-4">Weekly Timesheet</h1>
+          <WeekSelector
+            currentDate={currentDate}
+            onDateChange={setCurrentDate}
+          />
+          {isLoading ? (
+            <SkeletonLoader />
+          ) : (
+            <TimesheetForm
+              clients={clients}
+              initialEntries={entries}
+              projects={projects}
+              week={weekDays}
+              onSave={handleSave}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };
