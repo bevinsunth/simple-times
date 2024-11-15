@@ -6,7 +6,7 @@ import { OAuthProvider } from 'node-appwrite';
 
 import { createAdminClient } from '@/lib/server/appwrite';
 
-export async function signUpWithGithub() {
+export async function signInWithGithub(): Promise<void> {
   const { account } = await createAdminClient();
 
   const origin = headers().get('origin') ?? 'http://default-origin.com';

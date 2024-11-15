@@ -1,4 +1,5 @@
-import { Metadata } from 'next';
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -8,11 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { FaDiscord, FaMicrosoft, FaGoogle, FaGithub } from 'react-icons/fa';
-
-export const metadata: Metadata = {
-  title: 'Login',
-  description: 'Login to your account',
-};
+import { signInWithGithub } from '@/lib/server/auth';
 
 export default function LoginPage(): JSX.Element {
   return (
@@ -32,7 +29,12 @@ export default function LoginPage(): JSX.Element {
               <FaGoogle className="mr-2 h-4 w-4" />
               Google
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => {
+                void signInWithGithub();
+              }}
+            >
               <FaGithub className="mr-2 h-4 w-4" />
               Github
             </Button>
