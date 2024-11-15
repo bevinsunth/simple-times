@@ -1,11 +1,14 @@
 'use client';
 
-import { startOfWeek, endOfWeek, eachDayOfInterval, format } from 'date-fns';
-import { se } from 'date-fns/locale';
+import { startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { type Entries, saveEntries, getEntries } from '@/lib/server/timesheet';
+import {
+  saveEntries,
+  getEntries,
+  TimeSheetFormEntry,
+} from '@/lib/server/timesheet';
 
 import { WeekSelector } from '../components/week-selector';
 import { TimesheetForm } from '../components/weeky-timesheet-form';
@@ -34,27 +37,36 @@ const projects: Option[] = [
 const TimeSheet = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [entries, setEntries] = useState<Entries>({});
+  const [entries, setEntries] = useState<TimeSheetFormEntry[]>([]);
   const [weekDays, setWeekDays] = useState<Date[]>([]);
 
   useEffect(() => {
     const fetchEntries = async () => {
       setIsLoading(true);
-      const weekDays = eachDayOfInterval({
-        start: startOfWeek(currentDate),
-        end: endOfWeek(currentDate),
-      });
-      setWeekDays(weekDays);
-      setEntries(await getEntries(weekDays));
-      setIsLoading(false);
+      try {
+        const weekDays = eachDayOfInterval({
+          start: startOfWeek(currentDate),
+          end: endOfWeek(currentDate),
+        });
+        setWeekDays(weekDays);
+        setEntries(await getEntries(weekDays));
+      } catch (error) {
+        console.error('Failed to fetch entries:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    fetchEntries();
+    fetchEntries().catch(console.error);
   }, [currentDate]);
 
-  const handleSave = async (data: Entries) => {
+  const handleSave = (data: TimeSheetFormEntry[]) => {
     setIsLoading(true);
-    await saveEntries(data);
-    setIsLoading(false);
+    saveEntries(data)
+      .then(() => setIsLoading(false))
+      .catch(error => {
+        console.error('Failed to save entries:', error);
+        setIsLoading(false);
+      });
   };
 
   return (

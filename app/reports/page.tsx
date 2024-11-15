@@ -1,7 +1,7 @@
 'use client';
 
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { format } from 'date-fns';
+import { format, eachDayOfInterval } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,8 +13,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { getDocumentsForDatesBetweenWithEmptyDates } from '@/lib/server/timesheet';
-import { type TimeEntryData } from '@/lib/types/document-data.types';
+import { getEntries } from '@/lib/server/timesheet';
+import { type TimeSheetFormEntry } from '@/lib/types/document-data.types';
 
 import { TimesheetPDF } from '../components/timesheet-pdf';
 
@@ -31,19 +31,24 @@ async function fetchTimesheetData(startDate: Date, endDate: Date) {
 export default function TimesheetReport() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [reportData, setReportData] = useState<TimeEntryData[]>([]);
+  const [reportData, setReportData] = useState<TimeSheetFormEntry[]>([]);
 
   const generateReport = async () => {
     try {
-      const data = await getDocumentsForDatesBetweenWithEmptyDates(
-        startDate,
-        endDate
-      );
+      // Create array of all dates between start and end date
+      const dateRange = eachDayOfInterval({
+        start: startDate,
+        end: endDate,
+      });
+
+      // Get entries for the date range
+      const data = await getEntries(dateRange);
+
       if (!data) {
         setReportData([]);
         return;
       }
-      setReportData(data as TimeEntryData[]);
+      setReportData(data as TimeSheetFormEntry[]);
     } catch (error) {
       console.error('Failed to generate report:', error);
       setReportData([]);
@@ -115,7 +120,7 @@ export default function TimesheetReport() {
               </Popover>
             </div>
           </div>
-          <Button className="w-full" onClick={generateReport}>
+          <Button className="w-full" onClick={() => void generateReport()}>
             Generate Report
           </Button>
           {reportData.length > 0 && (
