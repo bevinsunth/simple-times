@@ -1,12 +1,12 @@
 'use client';
 
+import { TimeSheetFormEntry } from '@/lib/server/timesheet';
+import { Item } from '@radix-ui/react-select';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
-import { type TimeEntryData } from '@/lib/types/document-data.types';
-
 interface PDFReportProps {
-  data: TimeEntryData[];
+  data: TimeSheetFormEntry[];
   startDate: Date;
   endDate: Date;
 }
@@ -81,7 +81,7 @@ const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Client</Text>
+              <Text style={styles.tableCellHeader}>{Item.client}</Text>
             </View>
             <View style={styles.tableColHeader}>
               <Text style={styles.tableCellHeader}>Hours</Text>
@@ -90,12 +90,10 @@ const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
           {data.map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>NHP</Text>
+                <Text style={styles.tableCell}>{item.project}</Text>
               </View>
               <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>
-                  {item.hours === 0 ? '' : item.hours}
-                </Text>
+                <Text style={styles.tableCell}>{item.hours}</Text>
               </View>
             </View>
           ))}
