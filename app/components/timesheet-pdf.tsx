@@ -1,128 +1,118 @@
 'use client';
 
-import { TimeSheetFormEntry } from '@/lib/server/timesheet';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
+import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
 
-interface PDFReportProps {
+const styles = StyleSheet.create({
+  page: {
+    padding: 30,
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  table: {
+    display: 'table',
+    width: '100%',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#bfbfbf',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#bfbfbf',
+    minHeight: 30,
+    alignItems: 'center',
+  },
+  tableHeader: {
+    backgroundColor: '#f0f0f0',
+    fontWeight: 'bold',
+  },
+  tableCell: {
+    padding: 5,
+    borderRightWidth: 1,
+    borderRightColor: '#bfbfbf',
+  },
+  dateCell: {
+    width: '15%',
+  },
+  dayCell: {
+    width: '15%',
+  },
+  clientCell: {
+    width: '25%',
+  },
+  projectCell: {
+    width: '25%',
+  },
+  hoursCell: {
+    width: '20%',
+  },
+});
+
+interface TimesheetPDFProps {
   data: TimeSheetFormEntry[];
   startDate: Date;
   endDate: Date;
 }
 
-// PDF styles
-const styles = StyleSheet.create({
-  page: { padding: 30, fontFamily: 'Helvetica' },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: '#333333',
-    fontWeight: 'bold',
-  },
-  subtitle: { fontSize: 14, marginBottom: 20, color: '#666666' },
-  table: {
-    display: 'flex',
-    width: 'auto',
-    borderStyle: 'solid',
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-  },
-  tableRow: { margin: 'auto', flexDirection: 'row' },
-  tableColHeader: {
-    width: '20%',
-    borderStyle: 'solid',
-    borderColor: '#CCCCCC',
-    borderBottomColor: '#000000',
-    borderWidth: 1,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-  },
-  tableCol: {
-    width: '20%',
-    borderStyle: 'solid',
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-  },
-  tableCellHeader: {
-    margin: 'auto',
-    marginTop: 5,
-    marginBottom: 5,
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  tableCell: {
-    margin: 'auto',
-    marginTop: 5,
-    marginBottom: 5,
-    fontSize: 10,
-    color: '#333333',
-  },
-  totals: { marginTop: 30, fontSize: 14, fontWeight: 'bold', color: '#000000' },
-});
-
-// PDF Document component
-const TimesheetPDF = ({ data, startDate, endDate }: PDFReportProps) => {
-  const totalHours = data.reduce(
-    (sum, item) => sum + parseFloat(item.hours),
-    0
-  );
-
+const TimesheetPDF = ({
+  data,
+  startDate,
+  endDate,
+}: TimesheetPDFProps): JSX.Element => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Timesheet Report</Text>
-        <Text style={styles.subtitle}>
-          From: {format(startDate, 'MMMM d, yyyy')} To:{' '}
-          {format(endDate, 'MMMM d, yyyy')}
+        <Text style={styles.title}>
+          Timesheet Report ({format(startDate, 'MMM dd, yyyy')} -{' '}
+          {format(endDate, 'MMM dd, yyyy')})
         </Text>
+
         <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Date</Text>
+          {/* Table Header */}
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <View style={[styles.tableCell, styles.dateCell]}>
+              <Text>Date</Text>
             </View>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Day</Text>
+            <View style={[styles.tableCell, styles.dayCell]}>
+              <Text>Day</Text>
             </View>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Client</Text>
+            <View style={[styles.tableCell, styles.clientCell]}>
+              <Text>Client</Text>
             </View>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Project</Text>
+            <View style={[styles.tableCell, styles.projectCell]}>
+              <Text>Project</Text>
             </View>
-            <View style={styles.tableColHeader}>
-              <Text style={styles.tableCellHeader}>Hours</Text>
+            <View style={[styles.tableCell, styles.hoursCell]}>
+              <Text>Hours</Text>
             </View>
           </View>
-          {data.map((item, index) => (
+
+          {/* Table Body */}
+          {data.map((entry, index) => (
             <View key={index} style={styles.tableRow}>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>
-                  {format(new Date(item.date), 'MM/dd/yyyy')}
-                </Text>
+              <View style={[styles.tableCell, styles.dateCell]}>
+                <Text>{format(entry.date, 'MM/dd/yyyy')}</Text>
               </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>
-                  {format(new Date(item.date), 'EEEE')}
-                </Text>
+              <View style={[styles.tableCell, styles.dayCell]}>
+                <Text>{format(entry.date, 'EEEE')}</Text>
               </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{item.client}</Text>
+              <View style={[styles.tableCell, styles.clientCell]}>
+                <Text>{entry.client}</Text>
               </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{item.project}</Text>
+              <View style={[styles.tableCell, styles.projectCell]}>
+                <Text>{entry.project}</Text>
               </View>
-              <View style={styles.tableCol}>
-                <Text style={styles.tableCell}>{item.hours}</Text>
+              <View style={[styles.tableCell, styles.hoursCell]}>
+                <Text>{entry.hours}</Text>
               </View>
             </View>
           ))}
         </View>
-        <Text style={styles.totals}>Total Hours: {totalHours}</Text>
       </Page>
     </Document>
   );

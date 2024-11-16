@@ -16,10 +16,11 @@ import type {
 } from '@/lib/types/document-data.types';
 
 export interface TimeSheetFormEntry {
-  date: string;
+  date: Date;
   client: string;
   project: string;
-  hours: string;
+  hours: number;
+  notes?: string;
 }
 
 export const saveEntries = async (
