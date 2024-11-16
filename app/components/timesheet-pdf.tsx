@@ -3,28 +3,29 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
+import { parseDateDDMMYYYY } from '@/lib/date-utils';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 20,
+    fontSize: 10,
   },
   title: {
-    fontSize: 20,
-    marginBottom: 20,
+    fontSize: 14,
+    marginBottom: 15,
     textAlign: 'center',
   },
   table: {
-    display: 'table',
     width: '100%',
     borderStyle: 'solid',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: '#bfbfbf',
   },
   tableRow: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#bfbfbf',
-    minHeight: 30,
+    minHeight: 20,
     alignItems: 'center',
   },
   tableHeader: {
@@ -32,24 +33,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tableCell: {
-    padding: 5,
-    borderRightWidth: 1,
+    padding: 3,
+    borderRightWidth: 0.5,
     borderRightColor: '#bfbfbf',
+    fontSize: 8,
   },
   dateCell: {
-    width: '15%',
+    width: '12%',
   },
   dayCell: {
-    width: '15%',
+    width: '12%',
   },
   clientCell: {
-    width: '25%',
+    width: '30%',
   },
   projectCell: {
-    width: '25%',
+    width: '30%',
   },
   hoursCell: {
-    width: '20%',
+    width: '16%',
   },
 });
 
@@ -91,26 +93,34 @@ const TimesheetPDF = ({
               <Text>Hours</Text>
             </View>
           </View>
-
-          {/* Table Body */}
-          {data.map((entry, index) => (
-            <View key={index} style={styles.tableRow}>
-              <View style={[styles.tableCell, styles.dateCell]}>
-                <Text>{format(entry.date, 'MM/dd/yyyy')}</Text>
+          \{/* Table Body */}
+          {data.map((entry, index) => {
+            console.log('Entry date:', entry.date);
+            console.log('Entry date toString:', entry.date.toString());
+            console.log('Parsed date:', parseDateDDMMYYYY(entry.date.toString()));
+            
+            return (
+              <View key={index} style={styles.tableRow}>
+                <View style={[styles.tableCell, styles.dateCell]}>
+                  <Text>{entry.date.toString()}</Text>
+                </View>
+                <View style={[styles.tableCell, styles.dayCell]}>
+                  <Text>
+                    {format(parseDateDDMMYYYY(entry.date.toString()), 'EEEE')}
+                  </Text>
+                </View>
+                <View style={[styles.tableCell, styles.clientCell]}>
+                  <Text>{entry.client}</Text>
+                </View>
+                <View style={[styles.tableCell, styles.projectCell]}>
+                  <Text>{entry.project}</Text>
+                </View>
+                <View style={[styles.tableCell, styles.hoursCell]}>
+                  <Text>{entry.hours}</Text>
+                </View>
               </View>
-              <View style={[styles.tableCell, styles.dayCell]}>
-                <Text>{format(entry.date, 'EEEE')}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.clientCell]}>
-                <Text>{entry.client}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.projectCell]}>
-                <Text>{entry.project}</Text>
-              </View>
-              <View style={[styles.tableCell, styles.hoursCell]}>
-                <Text>{entry.hours}</Text>
-              </View>
-            </View>
+            );
+          })}
           ))}
         </View>
       </Page>
