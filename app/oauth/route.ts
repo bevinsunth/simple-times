@@ -1,9 +1,7 @@
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-import { createAdminClient, getLoggedInUser } from '@/lib/server/appwrite';
-
-import type { NextRequest } from 'next/server';
+import { createAdminClient } from '@/lib/server/appwrite';
 
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get('userId');
@@ -16,14 +14,12 @@ export async function GET(request: NextRequest) {
   const { account } = await createAdminClient();
   const session = await account.createSession(userId, secret);
 
-  cookies().set('simpleTimesSession', session.secret, {
+  cookies().set('simple-times-session', session.secret, {
     path: '/',
     httpOnly: true,
     sameSite: 'strict',
     secure: true,
   });
 
-  const user = await getLoggedInUser();
-
-  return NextResponse.redirect(`${request.nextUrl.origin}/sheet`);
+  return NextResponse.redirect(`${request.nextUrl.origin}`);
 }

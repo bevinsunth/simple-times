@@ -1,54 +1,60 @@
 import { cookies } from 'next/headers';
 import { Account, Client, Databases } from 'node-appwrite';
 
-export async function createSessionClient() {
+export async function createSessionClient(): Promise<{
+  account: Account;
+}> {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? '')
     .setProject(process.env.NEXT_APPWRITE_PROJECT ?? '');
 
-  const session = cookies().get('simpleTimesSession');
+  const session = cookies().get('simple-times-session');
   if (!session?.value) {
     throw new Error('No session');
   }
 
   client.setSession(session.value);
-
   return {
-    get account() {
+    get account(): Account {
       return new Account(client);
     },
   };
 }
 
-export async function createAdminClient() {
+export async function createAdminClient(): Promise<{
+  account: Account;
+}> {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? '')
     .setProject(process.env.NEXT_APPWRITE_PROJECT ?? '')
     .setKey(process.env.NEXT_APPWRITE_KEY ?? '');
 
   return {
-    get account() {
+    get account(): Account {
       return new Account(client);
     },
   };
 }
 
-export async function getLoggedInUser() {
+export async function getLoggedInUser(): Promise<unknown> {
   try {
     const { account } = await createSessionClient();
     return await account.get();
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error getting logged in user', error);
     return null;
   }
 }
 
-export function createDatabasesClient() {
+export function createDatabasesClient(): {
+  databases: Databases;
+} {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? '')
     .setProject(process.env.NEXT_APPWRITE_PROJECT ?? '');
-
   return {
-    get databases() {
+    get databases(): Databases {
       return new Databases(client);
     },
   };

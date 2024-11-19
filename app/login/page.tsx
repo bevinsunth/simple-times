@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { FaDiscord, FaMicrosoft, FaGoogle, FaGithub } from 'react-icons/fa';
 import { signInWithGithub } from '@/lib/server/auth';
+import { startTransition } from 'react';
 
 export default function LoginPage(): JSX.Element {
   return (
@@ -32,7 +33,9 @@ export default function LoginPage(): JSX.Element {
             <Button
               variant="outline"
               onClick={() => {
-                void signInWithGithub();
+                startTransition(() => {
+                  void signInWithGithub();
+                });
               }}
             >
               <FaGithub className="mr-2 h-4 w-4" />
