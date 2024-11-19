@@ -1,3 +1,4 @@
+import { SessionCookieName } from '@/app/constants';
 import { cookies } from 'next/headers';
 import { Account, Client, Databases } from 'node-appwrite';
 
@@ -8,7 +9,7 @@ export async function createSessionClient(): Promise<{
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? '')
     .setProject(process.env.NEXT_APPWRITE_PROJECT ?? '');
 
-  const session = cookies().get('simple-times-session');
+  const session = cookies().get(SessionCookieName);
   if (!session?.value) {
     throw new Error('No session');
   }

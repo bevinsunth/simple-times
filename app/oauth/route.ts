@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse, NextRequest } from 'next/server';
 
 import { createAdminClient } from '@/lib/server/appwrite';
+import { SessionCookieName } from '../constants';
 
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get('userId');
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   const { account } = await createAdminClient();
   const session = await account.createSession(userId, secret);
 
-  cookies().set('simple-times-session', session.secret, {
+  cookies().set(SessionCookieName, session.secret, {
     path: '/',
     httpOnly: true,
     sameSite: 'strict',
