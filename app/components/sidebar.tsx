@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Clock, Home, Calendar } from 'lucide-react';
+import { Clock, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
@@ -12,7 +12,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
           <div className="space-y-1">
             <Link href="/">
               <Button variant="ghost" className="w-full justify-start">
-                <Home className="mr-2 h-4 w-4" />
+                <Calendar className="mr-2 h-4 w-4" />
                 Timesheet
               </Button>
             </Link>
