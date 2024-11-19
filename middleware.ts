@@ -5,7 +5,7 @@ import { getLoggedInUser } from './lib/server/appwrite';
 // Add paths that need authentication
 const protectedPaths = ['/sheet', '/reports'];
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Get the pathname of the request
   const path = request.nextUrl.pathname;
 
@@ -16,6 +16,8 @@ export async function middleware(request: NextRequest) {
 
   // Get the token from session/cookie
   const user = await getLoggedInUser();
+
+  console.log('user', user);
 
   // If the path is protected and there's no token, redirect to login
   if (isProtectedPath && !user) {
