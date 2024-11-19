@@ -10,22 +10,16 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
         <div className="px-3 py-2">
           <h2 className="mb-2 px-4 text-lg font-semibold">Dashboard</h2>
           <div className="space-y-1">
-            <Link href="/dashboard">
+            <Link href="/">
               <Button variant="ghost" className="w-full justify-start">
                 <Home className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-            <Link href="/sheet">
-              <Button variant="ghost" className="w-full justify-start">
-                <Clock className="mr-2 h-4 w-4" />
                 Timesheet
               </Button>
             </Link>
-            <Link href="/report">
+            <Link href="/reports">
               <Button variant="ghost" className="w-full justify-start">
-                <Calendar className="mr-2 h-4 w-4" />
-                Report
+                <Clock className="mr-2 h-4 w-4" />
+                Reports
               </Button>
             </Link>
           </div>
