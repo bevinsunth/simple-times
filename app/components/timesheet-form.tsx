@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -26,6 +25,8 @@ import {
 } from '@/components/ui/select';
 import { formatDateDDMMYYYY } from '@/lib/date-utils';
 import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
+import { startTransition } from 'react';
+import { format } from 'date-fns';
 
 const entrySchema = z.object({
   client: z.string(),
@@ -65,7 +66,7 @@ interface Option {
 
 interface TimesheetFormProps {
   week: Date[];
-  onSave: (entries: TimeSheetFormEntry[]) => void;
+  onSave: (entries: TimeSheetFormEntry[]) => Promise<void>;
   initialEntries: TimeSheetFormEntry[];
   clients: Option[];
   projects: Option[];
@@ -77,9 +78,12 @@ const TimesheetForm = ({
   initialEntries,
   clients,
   projects,
-}: TimesheetFormProps) => {
+}: TimesheetFormProps): JSX.Element => {
   // First, prepare initial values including empty entries for each day
   const initialFormValues = {} as TimesheetSchema;
+
+  console.log('week', week);
+  console.log('initialEntries', initialEntries);
 
   // Initialize all week dates first
   week.forEach(date => {
@@ -120,7 +124,8 @@ const TimesheetForm = ({
     defaultValues: initialFormValues,
   });
 
-  const onSubmit = (data: TimesheetSchema): void => {
+  const onSubmit = async (data: TimesheetSchema): Promise<void> => {
+    console.log(data);
     const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
       dayEntries.map(entry => ({
         date,
@@ -129,12 +134,16 @@ const TimesheetForm = ({
         hours: entry.hours ?? '',
       }))
     );
-    onSave(entries);
+    await onSave(entries);
   };
 
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        className="space-y-4"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onSubmit={form.handleSubmit(async data => onSubmit(data))}
+      >
         {week.map(date => {
           const dateKey = formatDateDDMMYYYY(date);
           return (

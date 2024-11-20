@@ -16,10 +16,10 @@ import type {
 } from '@/lib/types/document-data.types';
 
 export interface TimeSheetFormEntry {
-  date: Date;
+  date: string;
   client: string;
   project: string;
-  hours: number;
+  hours: string;
   notes?: string;
 }
 
@@ -117,6 +117,7 @@ export const saveEntries = async (
 };
 
 export async function getEntries(dates: Date[]): Promise<TimeSheetFormEntry[]> {
+  console.log('dates', dates);
   const timeEntryCollection =
     await GetDbOperations<TimeEntryDocument>('timeEntry');
   const user = await getLoggedInUser();
@@ -134,6 +135,8 @@ export async function getEntries(dates: Date[]): Promise<TimeSheetFormEntry[]> {
       )
     ),
   ]);
+
+  console.log('response', response);
 
   const entries: TimeSheetFormEntry[] = response.documents.map(doc => ({
     date: formatDateDDMMYYYY(new Date(doc.date)),

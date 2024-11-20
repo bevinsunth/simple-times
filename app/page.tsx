@@ -5,7 +5,7 @@ import { Sidebar } from './components/sidebar';
 
 import type React from 'react';
 
-const TimeSheetPage = (): JSX.Element => {
+const Home = (): JSX.Element => {
   return (
     <div className="flex">
       <Sidebar className="w-64 border-r" />
@@ -18,4 +18,4 @@ const TimeSheetPage = (): JSX.Element => {
   );
 };
 
-export default TimeSheetPage;
+export default Home;

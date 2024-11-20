@@ -17,8 +17,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Get the token from session/cookie
   const user = await getLoggedInUser();
 
-  console.log('user', user);
-
   // If the path is protected and there's no token, redirect to login
   if (isProtectedPath && !user) {
     const loginUrl = new URL('/login', request.url);

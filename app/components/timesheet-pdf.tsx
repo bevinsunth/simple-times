@@ -95,9 +95,6 @@ const TimesheetPDF = ({
           </View>
           \{/* Table Body */}
           {data.map((entry, index) => {
-            console.log('Entry date:', entry.date);
-            console.log('Entry date toString:', entry.date.toString());
-            console.log('Parsed date:', parseDateDDMMYYYY(entry.date.toString()));
             
             return (
               <View key={index} style={styles.tableRow}>
