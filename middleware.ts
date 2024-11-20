@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getLoggedInUser } from './lib/server/appwrite';
 
 // Add paths that need authentication
-const protectedPaths = ['/', '/reports'];
+const protectedPaths = ['/timesheet', '/reports'];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Get the pathname of the request
@@ -19,6 +19,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // If the path is protected and there's no token, redirect to login
   if (isProtectedPath && !user) {
+    console.log('Path is protected', path);
+    console.log('User is not logged in, redirecting to login');
     const loginUrl = new URL('/login', request.url);
     // Add the current path as a "from" param to redirect back after login
     loginUrl.searchParams.set('from', path);
@@ -26,8 +28,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   // If the path is /login and user is already logged in, redirect to home
-  if (path === '/login' && user) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (path === '/login' && user?.email) {
+    console.log('User is logged in, redirecting to timesheet');
+    return NextResponse.redirect(new URL('/timesheet', request.url));
   }
 
   return NextResponse.next();

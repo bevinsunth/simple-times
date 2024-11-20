@@ -26,10 +26,6 @@ export default function LoginPage(): JSX.Element {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-1 gap-3">
-            <Button variant="outline">
-              <FaGoogle className="mr-2 h-4 w-4" />
-              Google
-            </Button>
             <Button
               variant="outline"
               onClick={() => {
@@ -41,6 +37,10 @@ export default function LoginPage(): JSX.Element {
               <FaGithub className="mr-2 h-4 w-4" />
               Github
             </Button>
+            {/* <Button variant="outline">
+              <FaGoogle className="mr-2 h-4 w-4" />
+              Google
+            </Button>
             <Button variant="outline">
               <FaDiscord className="mr-2 h-4 w-4" />
               Discord
@@ -48,7 +48,7 @@ export default function LoginPage(): JSX.Element {
             <Button variant="outline">
               <FaMicrosoft className="mr-2 h-4 w-4" />
               Microsoft
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>

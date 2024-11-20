@@ -137,7 +137,7 @@ const TimesheetForm = ({
     } catch (error) {
       console.error('Failed to auto-save:', error);
     }
-  }, 5000); // 5 second delay
+  }, 1000); // 5 second delay
 
   useEffect(() => {
     const subscription = form.watch((value, { name, type }) => {
