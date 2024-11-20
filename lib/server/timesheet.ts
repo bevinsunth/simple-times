@@ -34,6 +34,8 @@ export const saveEntries = async (
     return isValidHours && isValidClient && isValidProject;
   });
 
+  console.log('validEntries', validEntries);
+
   const timeEntryCollection =
     await GetDbOperations<TimeEntryDocument>('timeEntry');
   const user = await getLoggedInUser();
@@ -147,6 +149,31 @@ export async function getEntries(dates: Date[]): Promise<TimeSheetFormEntry[]> {
 
   return entries;
 }
+
+export const deleteEntry = async (entry: TimeSheetFormEntry): Promise<void> => {
+  const timeEntryCollection =
+    await GetDbOperations<TimeEntryDocument>('timeEntry');
+  const user = await getLoggedInUser();
+
+  if (user === null) {
+    error('User not logged in');
+    return;
+  }
+
+  console.log(entry);
+
+  const response = await timeEntryCollection.query([
+    Query.equal('userId', user.$id),
+    Query.equal(
+      'timeEntryIdentifier',
+      getUniqueTimeEntryIdentifier(entry.date, entry.client, entry.project)
+    ),
+  ]);
+
+  const document = response.documents[0];
+
+  await timeEntryCollection.delete(document.$id);
+};
 
 const getUniqueTimeEntryIdentifier = (
   date: string,

@@ -15,6 +15,7 @@ interface CollectionOperations<T extends Models.Document> {
     documentId: string,
     data: Omit<T, keyof Models.Document>
   ) => Promise<T>;
+  delete: (documentId: string) => Promise<unknown>;
 }
 
 const collections = {
@@ -29,7 +30,7 @@ type CollectionNames = keyof typeof collections;
 function createCollectionOperations<T extends Models.Document>(
   databaseId: string,
   collectionId: string
-) {
+): CollectionOperations<T> {
   return {
     query: async (queries: string[]): Promise<Models.DocumentList<T>> => {
       const { databases } = createDatabasesClient();
@@ -62,6 +63,10 @@ function createCollectionOperations<T extends Models.Document>(
         documentId,
         data
       );
+    },
+    delete: async (documentId: string): Promise<unknown> => {
+      const { databases } = createDatabasesClient();
+      return databases.deleteDocument(databaseId, collectionId, documentId);
     },
   };
 }

@@ -1,19 +1,15 @@
 'use client';
 
-import { startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import {
-  saveEntries,
-  getEntries,
-  TimeSheetFormEntry,
-} from '@/lib/server/timesheet';
+import { saveEntries, TimeSheetFormEntry } from '@/lib/server/timesheet';
 
 import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
 import type React from 'react';
+import { useTimesheetStore } from '@/lib/client/timesheet';
 import SaveStatusAlert from '../save-status-alert';
 
 interface Option {
@@ -35,36 +31,29 @@ const projects: Option[] = [
 ];
 
 const TimeSheet: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [saveStatus, setSaveStatus] = useState<
-    'idle' | 'saving' | 'saved' | 'error'
-  >('idle');
-  const [entries, setEntries] = useState<TimeSheetFormEntry[]>([]);
-  const [weekDays, setWeekDays] = useState<Date[]>([]);
+  const {
+    currentDate,
+    isLoading,
+    isSaving,
+    entries,
+    weekDays,
+    setCurrentDate,
+    fetchEntries,
+    setEntries,
+    deleteEntry,
+  } = useTimesheetStore();
 
   useEffect(() => {
-    const fetchEntries = async (): Promise<void> => {
-      setIsLoading(true);
-      try {
-        const weekDays = eachDayOfInterval({
-          start: startOfWeek(currentDate),
-          end: endOfWeek(currentDate),
-        });
-        setWeekDays(weekDays);
-        setEntries(await getEntries(weekDays));
-        console.log('entries', entries);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEntries().catch(console.error);
-  }, [currentDate]);
+    void fetchEntries();
+  }, [fetchEntries]);
 
   const handleSave = async (data: TimeSheetFormEntry[]): Promise<void> => {
-    setSaveStatus('saving');
     await saveEntries(data);
-    setSaveStatus('saved');
+    setEntries(data);
+  };
+
+  const handleDelete = async (entry: TimeSheetFormEntry): Promise<void> => {
+    await deleteEntry(entry);
   };
 
   return (
@@ -80,9 +69,10 @@ const TimeSheet: React.FC = () => {
           projects={projects}
           week={weekDays}
           onSave={handleSave}
+          onDelete={handleDelete}
         />
       )}
-      <SaveStatusAlert status={saveStatus} />
+      {isSaving !== 'idle' && <SaveStatusAlert status={isSaving} />}
     </>
   );
 };
