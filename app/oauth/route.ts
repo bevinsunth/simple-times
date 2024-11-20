@@ -4,7 +4,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { createAdminClient } from '@/lib/server/appwrite';
 import { SessionCookieName } from '../constants';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const userId = request.nextUrl.searchParams.get('userId');
   const secret = request.nextUrl.searchParams.get('secret');
 

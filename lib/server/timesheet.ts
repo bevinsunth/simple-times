@@ -40,7 +40,7 @@ export const saveEntries = async (
     await GetDbOperations<TimeEntryDocument>('timeEntry');
   const user = await getLoggedInUser();
 
-  if (user === null) {
+  if (!user) {
     error('User not logged in');
     return [];
   }
@@ -65,10 +65,11 @@ export const saveEntries = async (
   //get all the matching documents
   const matchedDocuments = await timeEntryCollection.query([
     // Always filter by the current user
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     Query.equal('userId', user.$id),
 
     // Add timeEntryIdentifier filters based on array length
-    ...(() => {
+    ...((): string[] => {
       if (timeEntryDataArray.length > 1) {
         // Multiple entries - use OR condition to match any identifier
         return [

@@ -136,7 +136,7 @@ const TimesheetForm = ({
       }
     });
 
-    return () => subscription.unsubscribe();
+    return (): void => void subscription.unsubscribe();
   }, [form]);
 
   const handleAutoSave = async (): Promise<void> => {

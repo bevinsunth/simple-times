@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { saveEntries, TimeSheetFormEntry } from '@/lib/server/timesheet';
+import { TimeSheetFormEntry } from '@/lib/server/timesheet';
 
 import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
@@ -41,6 +41,7 @@ const TimeSheet: React.FC = () => {
     fetchEntries,
     setEntries,
     deleteEntry,
+    saveEntries,
   } = useTimesheetStore();
 
   useEffect(() => {
@@ -54,6 +55,7 @@ const TimeSheet: React.FC = () => {
 
   const handleDelete = async (entry: TimeSheetFormEntry): Promise<void> => {
     await deleteEntry(entry);
+    setEntries(entries.filter(e => e.date !== entry.date));
   };
 
   return (

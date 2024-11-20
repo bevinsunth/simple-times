@@ -95,7 +95,6 @@ const TimesheetPDF = ({
           </View>
           \{/* Table Body */}
           {data.map((entry, index) => {
-            
             return (
               <View key={index} style={styles.tableRow}>
                 <View style={[styles.tableCell, styles.dateCell]}>
@@ -118,7 +117,6 @@ const TimesheetPDF = ({
               </View>
             );
           })}
-          ))}
         </View>
       </Page>
     </Document>

@@ -1,6 +1,6 @@
 import { SessionCookieName } from '@/app/constants';
 import { cookies } from 'next/headers';
-import { Account, Client, Databases } from 'node-appwrite';
+import { Account, Client, Databases, type Models } from 'node-appwrite';
 
 export async function createSessionClient(): Promise<{
   account: Account;
@@ -37,7 +37,7 @@ export async function createAdminClient(): Promise<{
   };
 }
 
-export async function getLoggedInUser(): Promise<unknown> {
+export async function getLoggedInUser(): Promise<Models.User<Models.Document> | null> {
   try {
     const { account } = await createSessionClient();
     return await account.get();

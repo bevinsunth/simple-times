@@ -4,6 +4,7 @@ import {
   TimeSheetFormEntry,
   deleteEntry,
   getEntries,
+  saveEntries,
 } from '@/lib/server/timesheet';
 
 interface TimesheetState {
@@ -16,6 +17,7 @@ interface TimesheetState {
   setEntries: (entries: TimeSheetFormEntry[]) => void;
   deleteEntry: (entry: TimeSheetFormEntry) => Promise<void>;
   fetchEntries: () => Promise<void>;
+  saveEntries: (entries: TimeSheetFormEntry[]) => Promise<void>;
 }
 
 export const useTimesheetStore = create<TimesheetState>((set, get) => ({
@@ -41,6 +43,11 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+  saveEntries: async (entries: TimeSheetFormEntry[]): Promise<void> => {
+    set({ isSaving: 'saving' });
+    await saveEntries(entries);
+    set({ isSaving: 'saved' });
   },
   deleteEntry: async (entry: TimeSheetFormEntry): Promise<void> => {
     set({ isSaving: 'saving' });

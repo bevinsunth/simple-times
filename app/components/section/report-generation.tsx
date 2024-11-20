@@ -140,7 +140,7 @@ export default function ReportGeneration(): JSX.Element {
         </div>
         <Button
           className="w-full"
-          onClick={handleDownloadReport}
+          onClick={() => void handleDownloadReport()}
           disabled={isLoading || !date?.from || !date?.to}
           aria-live="polite"
         >

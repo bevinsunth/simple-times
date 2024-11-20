@@ -3,7 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Clock, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
-export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
+export function Sidebar({
+  className,
+}: React.HTMLAttributes<HTMLDivElement>): JSX.Element {
   return (
     <div className={cn('pb-12 min-h-screen', className)}>
       <div className="space-y-4 py-4">
