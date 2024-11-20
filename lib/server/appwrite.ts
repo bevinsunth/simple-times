@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { Account, Client, Databases, type Models } from 'node-appwrite';
 
 export async function createSessionClient(): Promise<{
-  account: Account;
+  account: Account | null;
 }> {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? '')
@@ -11,7 +11,10 @@ export async function createSessionClient(): Promise<{
 
   const session = cookies().get(SessionCookieName);
   if (!session?.value) {
-    throw new Error('No session');
+    console.info('No session');
+    return {
+      account: null,
+    };
   }
 
   client.setSession(session.value);
@@ -40,10 +43,13 @@ export async function createAdminClient(): Promise<{
 export async function getLoggedInUser(): Promise<Models.User<Models.Document> | null> {
   try {
     const { account } = await createSessionClient();
+    if (!account) {
+      return null;
+    }
     return await account.get();
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error('Error getting logged in user', error);
+    console.log('User not logged in user', error);
     return null;
   }
 }

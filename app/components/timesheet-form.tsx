@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDebouncedCallback } from 'use-debounce';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -27,32 +28,22 @@ import {
 import { formatDateDDMMYYYY } from '@/lib/date-utils';
 import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
 import { format } from 'date-fns';
-import SaveStatusAlert from './save-status-alert';
-import { useTimesheetStore } from '@/lib/client/timesheet';
 
 const entrySchema = z.object({
-  client: z.string(),
-  project: z.string(),
-  hours: z
-    .string()
-    .optional()
-    .transform(val => val?.trim())
-    .refine(
-      val => !val || /^\d+(\.\d{1,2})?$/.test(val),
-      'Invalid hours format'
-    )
-    .refine(
-      val => {
-        if (!val) {
-          return true;
-        }
-        const num = parseFloat(val);
-        return !isNaN(num) && num > 0 && num <= 24;
-      },
-      {
-        message: 'Hours must be between 0 and 24',
+  client: z.string().min(1, 'Client is required'),
+  project: z.string().min(1, 'Project is required'),
+  hours: z.string().refine(
+    value => {
+      if (value === '') {
+        return true;
       }
-    ),
+      const hours = parseFloat(value);
+      return !isNaN(hours) && hours >= 0 && hours <= 24;
+    },
+    {
+      message: 'Hours must be a number between 0 and 24',
+    }
+  ),
 });
 
 const dailyEntriesSchema = z.array(entrySchema);
@@ -92,8 +83,6 @@ const TimesheetForm = ({
     initialFormValues[dateKey] = [{ client: '', project: '', hours: '' }];
   });
 
-  console.log('initialEntries', initialEntries);
-
   // Then overlay existing entries
   initialEntries.forEach(entry => {
     if (!initialFormValues[entry.date]) {
@@ -125,26 +114,15 @@ const TimesheetForm = ({
   const form = useForm<TimesheetSchema>({
     resolver: zodResolver(timesheetSchema),
     defaultValues: initialFormValues,
+    mode: 'all',
   });
 
-  // Watch for hours changes and trigger auto-save
-  useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      // Only trigger for hours changes
-      if (name?.includes('.hours') && type === 'change') {
-        void handleAutoSave();
-      }
-    });
-
-    return (): void => void subscription.unsubscribe();
-  }, [form]);
-
-  const handleAutoSave = async (): Promise<void> => {
+  const handleAutoSave = useDebouncedCallback(async (): Promise<void> => {
     try {
       const data = form.getValues();
       const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
         dayEntries
-          .filter(entry => entry.client && entry.project && entry.hours) // Only save complete entries
+          .filter(entry => entry.client && entry.project && entry.hours)
           .map(entry => ({
             date,
             client: entry.client,
@@ -153,14 +131,34 @@ const TimesheetForm = ({
           }))
       );
 
-      console.log('entries', entries);
       if (entries.length > 0) {
         await onSave(entries);
       }
     } catch (error) {
       console.error('Failed to auto-save:', error);
     }
-  };
+  }, 5000); // 5 second delay
+
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (name?.includes('.hours') && type === 'change') {
+        const [dateKey, index] = name.split('.').slice(0, 2);
+        void Promise.all([
+          form.trigger(`${dateKey}.${index}.hours`),
+          form.trigger(`${dateKey}.${index}.client`),
+          form.trigger(`${dateKey}.${index}.project`),
+        ]).then(([hoursValid, clientValid, projectValid]) => {
+          if (hoursValid && clientValid && projectValid) {
+            void handleAutoSave();
+          }
+        });
+      }
+    });
+
+    return (): void => {
+      subscription.unsubscribe();
+    };
+  }, [form, handleAutoSave]);
 
   const handleDeleteEntry = async (
     dateKey: string,
@@ -258,7 +256,7 @@ const TimesheetForm = ({
                               <Input
                                 {...field}
                                 placeholder="Hours"
-                                step="0.01"
+                                step="0.5"
                                 type="number"
                               />
                             </FormControl>
