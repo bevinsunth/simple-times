@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getLoggedInUser } from './lib/server/appwrite';
 
 // Add paths that need authentication
-const protectedPaths = ['/sheet', '/reports'];
+const protectedPaths = ['/', '/reports'];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Get the pathname of the request
