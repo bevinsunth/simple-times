@@ -14,6 +14,7 @@ import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
 import type React from 'react';
+import SaveStatusAlert from '../save-status-alert';
 
 interface Option {
   value: string;
@@ -36,6 +37,9 @@ const projects: Option[] = [
 const TimeSheet: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [saveStatus, setSaveStatus] = useState<
+    'idle' | 'saving' | 'saved' | 'error'
+  >('idle');
   const [entries, setEntries] = useState<TimeSheetFormEntry[]>([]);
   const [weekDays, setWeekDays] = useState<Date[]>([]);
 
@@ -58,9 +62,9 @@ const TimeSheet: React.FC = () => {
   }, [currentDate]);
 
   const handleSave = async (data: TimeSheetFormEntry[]): Promise<void> => {
-    setIsLoading(true);
+    setSaveStatus('saving');
     await saveEntries(data);
-    setIsLoading(false);
+    setSaveStatus('saved');
   };
 
   return (
@@ -78,6 +82,7 @@ const TimeSheet: React.FC = () => {
           onSave={handleSave}
         />
       )}
+      <SaveStatusAlert status={saveStatus} />
     </>
   );
 };
