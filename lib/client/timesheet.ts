@@ -53,12 +53,9 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
     set({ isSaving: 'saving' });
     try {
       await deleteEntry(entry);
-      await get().fetchEntries();
       set({ isSaving: 'saved' });
     } catch (error) {
       set({ isSaving: 'error' });
-    } finally {
-      setTimeout(() => set({ isSaving: 'idle' }), 8000);
     }
   },
 }));

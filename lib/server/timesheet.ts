@@ -1,6 +1,6 @@
 'use server';
 
-import { error } from 'console';
+import { error, warn } from 'console';
 
 import { ID, Query } from 'node-appwrite';
 
@@ -172,6 +172,11 @@ export const deleteEntry = async (entry: TimeSheetFormEntry): Promise<void> => {
   ]);
 
   const document = response.documents[0];
+
+  if (!document) {
+    warn('Document not found');
+    return;
+  }
 
   await timeEntryCollection.delete(document.$id);
 };

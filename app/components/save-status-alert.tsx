@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
@@ -28,11 +28,27 @@ export interface SaveStatusAlertProps
 
 const SaveStatusAlert: React.FC<SaveStatusAlertProps> = ({
   className,
-  variant,
   status,
   ...props
 }) => {
-  if (status === 'idle') return null;
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    // Reset visibility when status changes
+    setVisible(true);
+
+    // Don't set timer for error or idle status
+    if (status === 'error' || status === 'idle') return;
+
+    // Set timer for other statuses
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+
+    return (): void => clearTimeout(timer);
+  }, [status]);
+
+  if (status === 'idle' || !visible) return null;
 
   return (
     <div
@@ -40,7 +56,8 @@ const SaveStatusAlert: React.FC<SaveStatusAlertProps> = ({
         alertVariants({
           variant: status,
           className,
-        })
+        }),
+        'animate-in slide-in-from-bottom-2'
       )}
       role="status"
       aria-live="polite"

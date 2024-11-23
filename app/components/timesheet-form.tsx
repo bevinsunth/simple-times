@@ -167,6 +167,10 @@ const TimesheetForm = ({
     try {
       const entry = form.getValues(`${dateKey}.${index}`);
       await onDelete({ ...entry, date: dateKey } as TimeSheetFormEntry);
+      // Remove entry at specific index
+      const currentEntries = form.getValues(dateKey) || [];
+      const updatedEntries = currentEntries.filter((_, i) => i !== index);
+      form.setValue(dateKey, updatedEntries);
     } catch (error) {
       console.error('Failed to delete entry:', error);
     }
