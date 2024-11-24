@@ -1,7 +1,7 @@
 'use client';
 
 import TimeSheet from '../components/section/timesheet';
-import { Sidebar } from '../components/sidebar';
+import { Sidebar } from '../components/section/sidebar';
 
 import type React from 'react';
 

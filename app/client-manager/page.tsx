@@ -1,6 +1,6 @@
 'use client';
 
-import ReportGeneration from '../components/section/report-generation';
+import ClientManager from '../components/section/client-manager';
 import { Sidebar } from '../components/section/sidebar';
 
 import type React from 'react';
@@ -11,7 +11,7 @@ const Home = (): JSX.Element => {
       <Sidebar className="w-64 border-r" />
       <div className="flex-1">
         <div className="flex min-h-screen items-center justify-center">
-          <ReportGeneration />
+          <ClientManager />
         </div>
       </div>
     </div>
