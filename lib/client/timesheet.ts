@@ -1,23 +1,19 @@
 import { create } from 'zustand';
 import { startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
-import {
-  TimeSheetFormEntry,
-  deleteEntry,
-  getEntries,
-  saveEntries,
-} from '@/lib/server/timesheet';
+import { deleteEntry, getEntries, saveEntries } from '@/lib/server/timesheet';
+import { TimeEntryData } from '../types';
 
 interface TimesheetState {
   currentDate: Date;
   isLoading: boolean;
   isSaving: 'idle' | 'saving' | 'saved' | 'error';
-  entries: TimeSheetFormEntry[];
+  entries: TimeEntryData[];
   weekDays: Date[];
   setCurrentDate: (date: Date) => void;
-  setEntries: (entries: TimeSheetFormEntry[]) => void;
-  deleteEntry: (entry: TimeSheetFormEntry) => Promise<void>;
+  setEntries: (entries: TimeEntryData[]) => void;
+  deleteEntry: (entry: TimeEntryData) => Promise<void>;
   fetchEntries: () => Promise<void>;
-  saveEntries: (entries: TimeSheetFormEntry[]) => Promise<void>;
+  saveEntries: (entries: TimeEntryData[]) => Promise<void>;
 }
 
 export const useTimesheetStore = create<TimesheetState>((set, get) => ({
@@ -30,7 +26,7 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
     set({ currentDate: date });
     void get().fetchEntries();
   },
-  setEntries: (entries: TimeSheetFormEntry[]): void => set({ entries }),
+  setEntries: (entries: TimeEntryData[]): void => set({ entries }),
   fetchEntries: async (): Promise<void> => {
     set({ isLoading: true });
     try {
@@ -38,21 +34,24 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
         start: startOfWeek(get().currentDate),
         end: endOfWeek(get().currentDate),
       });
-      const entries = await getEntries(weekDays);
-      set({ weekDays, entries });
+      const entries = await getEntries(
+        startOfWeek(get().currentDate),
+        endOfWeek(get().currentDate)
+      );
+      set({ entries, weekDays });
     } finally {
       set({ isLoading: false });
     }
   },
-  saveEntries: async (entries: TimeSheetFormEntry[]): Promise<void> => {
+  saveEntries: async (entries: TimeEntryData[]): Promise<void> => {
     set({ isSaving: 'saving' });
     await saveEntries(entries);
     set({ isSaving: 'saved' });
   },
-  deleteEntry: async (entry: TimeSheetFormEntry): Promise<void> => {
+  deleteEntry: async (entry: TimeEntryData): Promise<void> => {
     set({ isSaving: 'saving' });
     try {
-      await deleteEntry(entry);
+      await deleteEntry(entry.id);
       set({ isSaving: 'saved' });
     } catch (error) {
       set({ isSaving: 'error' });

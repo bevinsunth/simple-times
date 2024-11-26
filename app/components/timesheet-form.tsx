@@ -25,13 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { formatDateDDMMYYYY } from '@/lib/date-utils';
-import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
+import { formatDateDDMMYYYY, parseDateDDMMYYYY } from '@/lib/utils/date';
 import { format } from 'date-fns';
+import { TimeEntryFormData } from '@/lib/types';
 
 const entrySchema = z.object({
-  client: z.string().min(1, 'Client is required'),
-  project: z.string().min(1, 'Project is required'),
+  clientId: z.string().min(1, 'Client is required'),
+  projectId: z.string().min(1, 'Project is required'),
   hours: z.string().refine(
     value => {
       if (value === '') {
@@ -59,9 +59,9 @@ interface Option {
 
 interface TimesheetFormProps {
   week: Date[];
-  onSave: (entries: TimeSheetFormEntry[]) => Promise<void>;
-  onDelete: (entry: TimeSheetFormEntry) => Promise<void>;
-  initialEntries: TimeSheetFormEntry[];
+  onSave: (entries: TimeEntryFormData[]) => Promise<void>;
+  onDelete: (entry: TimeEntryFormData) => Promise<void>;
+  initialEntries: TimeEntryFormData[];
   clients: Option[];
   projects: Option[];
 }
@@ -80,34 +80,30 @@ const TimesheetForm = ({
   // Initialize all week dates first
   week.forEach(date => {
     const dateKey = formatDateDDMMYYYY(date);
-    initialFormValues[dateKey] = [{ client: '', project: '', hours: '' }];
+    initialFormValues[dateKey] = [{ clientId: '', projectId: '', hours: '' }];
   });
 
   // Then overlay existing entries
   initialEntries.forEach(entry => {
-    if (!initialFormValues[entry.date]) {
-      initialFormValues[entry.date] = []; // Ensure array exists
+    const dateKey = formatDateDDMMYYYY(entry.date);
+    const dateEntries = initialFormValues[dateKey];
+
+    if (!dateEntries) {
+      initialFormValues[dateKey] = []; // Ensure array exists
     }
 
-    if (
-      initialFormValues[entry.date].length === 1 &&
-      !initialFormValues[entry.date][0].client
-    ) {
+    const newEntry = {
+      clientId: entry.clientId,
+      projectId: entry.projectId,
+      hours: entry.hours.toString(),
+    };
+
+    if (dateEntries?.length === 1 && !dateEntries[0].clientId) {
       // Replace the empty entry
-      initialFormValues[entry.date] = [
-        {
-          client: entry.client,
-          project: entry.project,
-          hours: entry.hours,
-        },
-      ];
+      initialFormValues[dateKey] = [newEntry];
     } else {
       // Add to existing entries
-      initialFormValues[entry.date].push({
-        client: entry.client,
-        project: entry.project,
-        hours: entry.hours,
-      });
+      initialFormValues[dateKey]?.push(newEntry);
     }
   });
 
@@ -122,17 +118,17 @@ const TimesheetForm = ({
       const data = form.getValues();
       const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
         dayEntries
-          .filter(entry => entry.client && entry.project && entry.hours)
+          .filter(entry => entry.clientId && entry.projectId && entry.hours)
           .map(entry => ({
-            date,
-            client: entry.client,
-            project: entry.project,
-            hours: entry.hours ?? '',
+            date: parseDateDDMMYYYY(date),
+            clientId: entry.clientId,
+            projectId: entry.projectId,
+            hours: parseFloat(entry.hours),
           }))
       );
 
       if (entries.length > 0) {
-        await onSave(entries);
+        await onSave(entries as TimeEntryFormData[]);
       }
     } catch (error) {
       console.error('Failed to auto-save:', error);
@@ -166,7 +162,11 @@ const TimesheetForm = ({
   ): Promise<void> => {
     try {
       const entry = form.getValues(`${dateKey}.${index}`);
-      await onDelete({ ...entry, date: dateKey } as TimeSheetFormEntry);
+      await onDelete({
+        ...entry,
+        hours: parseFloat(entry.hours),
+        date: parseDateDDMMYYYY(dateKey),
+      } as TimeEntryFormData);
       // Remove entry at specific index
       const currentEntries = form.getValues(dateKey) || [];
       const updatedEntries = currentEntries.filter((_, i) => i !== index);
@@ -293,7 +293,7 @@ const TimesheetForm = ({
                       const currentEntries = form.getValues(dateKey) || [];
                       form.setValue(dateKey, [
                         ...currentEntries,
-                        { client: '', project: '', hours: '' },
+                        { clientId: '', projectId: '', hours: '' },
                       ]);
                     }}
                   >

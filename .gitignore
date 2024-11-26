@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.wrangler/state/v3/d1/miniflare-D1DatabaseObject/d68d27cae553a31accf251a4fb67e282ea0ffdcb624a67cdbb989e301d375d93.sqlite
+.wrangler/state/v3/d1/miniflare-D1DatabaseObject/d68d27cae553a31accf251a4fb67e282ea0ffdcb624a67cdbb989e301d375d93.sqlite-shm
+.wrangler/state/v3/d1/miniflare-D1DatabaseObject/d68d27cae553a31accf251a4fb67e282ea0ffdcb624a67cdbb989e301d375d93.sqlite-wal

@@ -2,8 +2,8 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
-import { type TimeSheetFormEntry } from '@/lib/server/timesheet';
-import { parseDateDDMMYYYY } from '@/lib/date-utils';
+import { type TimeEntryFormData } from '@/lib/types';
+import { parseDateDDMMYYYY } from '@/lib/utils/date';
 
 const styles = StyleSheet.create({
   page: {
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 interface TimesheetPDFProps {
-  data: TimeSheetFormEntry[];
+  data: TimeEntryFormData[];
   startDate: Date;
   endDate: Date;
 }
@@ -111,10 +111,10 @@ const TimesheetPDF = ({
                   </Text>
                 </View>
                 <View style={[styles.tableCell, styles.clientCell]}>
-                  <Text>{entry.client}</Text>
+                  <Text>{entry.clientId}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.projectCell]}>
-                  <Text>{entry.project}</Text>
+                  <Text>{entry.projectId}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.hoursCell]}>
                   <Text>{entry.hours}</Text>
