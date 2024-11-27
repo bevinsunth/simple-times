@@ -41,7 +41,6 @@ model Project {
   clientId    String
   client      Client      @relation(fields: [clientId], references: [id])
   timeEntries TimeEntry[]
-
 }
 
 model User {

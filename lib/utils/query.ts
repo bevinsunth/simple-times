@@ -1,7 +1,6 @@
 import { Client, Project, User } from '@prisma/client/edge';
-import prisma from '../db';
 import { TimeEntryData } from '../types';
-
+import { db } from '@/lib/db';
 //ToDo: Add cache strategy
 
 //Query for time entries
@@ -9,7 +8,7 @@ export const getTimeEntries = async (
   userId: string,
   dates: { startDate: Date; endDate: Date }
 ): Promise<TimeEntryData[]> => {
-  const timeEntries = await prisma.timeEntry.findMany({
+  const timeEntries = await db.timeEntry.findMany({
     where: { userId, date: { gte: dates.startDate, lte: dates.endDate } },
   });
   return timeEntries;
@@ -23,9 +22,9 @@ export const upsertTimeEntries = async (
   const now = new Date();
 
   // Use transaction to ensure all operations succeed or none do
-  const newTimeEntries = await prisma.$transaction(
+  const newTimeEntries = await db.$transaction(
     timeEntries.map(entry =>
-      prisma.timeEntry.upsert({
+      db.timeEntry.upsert({
         where: { id: entry.id },
         update: {
           ...entry,
@@ -60,28 +59,34 @@ export const deleteTimeEntry = async (id: string): Promise<void> => {
 
 //Add user
 export const addUser = async (user: User): Promise<User> => {
-  const newUser = await prisma.user.create({ data: user });
+  const newUser = await db.user.create({ data: user });
   return newUser;
 };
 
 //Add client
 export const addClient = async (client: Client): Promise<Client> => {
-  const newClient = await prisma.client.create({ data: client });
+  const newClient = await db.client.create({ data: client });
   return newClient;
 };
 
 //Delete client
 export const deleteClient = async (id: string): Promise<void> => {
-  await prisma.client.delete({ where: { id } });
+  await db.client.delete({ where: { id } });
 };
 
 //Add project
 export const addProject = async (project: Project): Promise<Project> => {
-  const newProject = await prisma.project.create({ data: project });
+  const newProject = await db.project.create({ data: project });
   return newProject;
 };
 
 //Delete project
 export const deleteProject = async (id: string): Promise<void> => {
-  await prisma.project.delete({ where: { id } });
+  await db.project.delete({ where: { id } });
+};
+
+//Get user by email
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  const user = await db.user.findUnique({ where: { email } });
+  return user;
 };

@@ -1,14 +1,12 @@
 'use server';
 
 import { error } from 'console';
-
-import { getLoggedInUser } from './appwrite';
 import {
   upsertTimeEntries,
   deleteTimeEntry,
   getTimeEntries,
 } from '@/lib/utils/query';
-
+import { getLoggedInUser } from '@/lib/utils/user';
 import type { TimeEntryData, TimeEntryFormData } from '@/lib/types';
 
 const generateTimeEntryId = (entry: TimeEntryFormData): string => {
@@ -21,15 +19,16 @@ export const saveEntries = async (
   console.log('entries', entries);
 
   const validEntries = entries.filter(entry => {
-    const isValidHours = !isNaN(entry.hours) && entry.hours > 0;
+    const isValidHours =
+      typeof entry.hours === 'number' && !isNaN(entry.hours) && entry.hours > 0;
     const isValidClient = entry.clientId.trim() !== '';
     const isValidProject = entry.projectId.trim() !== '';
     return isValidHours && isValidClient && isValidProject;
   });
 
-  const user = await getLoggedInUser();
+  const userData = await getLoggedInUser();
 
-  if (!user) {
+  if (!userData) {
     error('User not logged in');
     return [];
   }
@@ -45,7 +44,7 @@ export const saveEntries = async (
   }));
 
   // Update the matched documents and create new ones
-  await upsertTimeEntries(enrichedEntries, user.$id);
+  await upsertTimeEntries(enrichedEntries, userData.id);
   return enrichedEntries;
 };
 
@@ -58,13 +57,13 @@ export async function getEntries(
     return [];
   }
 
-  const user = await getLoggedInUser();
-  if (!user) {
+  const userData = await getLoggedInUser();
+  if (!userData) {
     error('User not logged in');
     return [];
   }
 
-  const entries = await getTimeEntries(user.$id, {
+  const entries = await getTimeEntries(userData.id, {
     startDate,
     endDate,
   });
