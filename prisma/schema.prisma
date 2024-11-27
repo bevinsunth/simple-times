@@ -13,9 +13,9 @@ model TimeEntry {
   id          String   @id @default(cuid())
   date        DateTime
   clientId    String
-  client      Client   @relation(fields: [clientId], references: [id])
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade )
   hours       Float
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -29,7 +29,7 @@ model Client {
   id          String      @id @default(uuid())
   name        String
   userId      String
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   projects    Project[]
   timeEntries TimeEntry[]
 
@@ -39,7 +39,7 @@ model Project {
   id          String      @id @default(uuid())
   name        String
   clientId    String
-  client      Client      @relation(fields: [clientId], references: [id])
+  client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   timeEntries TimeEntry[]
 }
 

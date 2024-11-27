@@ -98,12 +98,7 @@ const TimesheetPDF = ({
             return (
               <View key={index} style={styles.tableRow}>
                 <View style={[styles.tableCell, styles.dateCell]}>
-                  <Text>
-                    {format(
-                      parseDateDDMMYYYY(entry.date.toString()),
-                      'dd/MM/yyyy'
-                    )}
-                  </Text>
+                  <Text>{format(entry.date, 'dd/MM/yyyy')}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.dayCell]}>
                   <Text>
