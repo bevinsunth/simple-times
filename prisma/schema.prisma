@@ -1,7 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  engineType      = "library"
+  provider = "prisma-client-js"
+  previewFeatures = ["strictUndefinedChecks"]
 }
 
 datasource db {
@@ -9,29 +8,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id      String   @id @default(uuid())
-  email   String   @unique
-  name    String?
-  clients Client[]
-
-  @@map("users")
-}
 
 model TimeEntry {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String   @id @default(cuid())
   date        DateTime
   clientId    String
-  projectId   String
-  hours       Float?
-  description String?
-  userId      String
-  project     Project  @relation(fields: [projectId], references: [id])
   client      Client   @relation(fields: [clientId], references: [id])
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  hours       Float
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@map("time_entries")
+  @@index([userId])
 }
 
 model Client {
@@ -42,7 +33,6 @@ model Client {
   projects    Project[]
   timeEntries TimeEntry[]
 
-  @@map("clients")
 }
 
 model Project {
@@ -52,5 +42,66 @@ model Project {
   client      Client      @relation(fields: [clientId], references: [id])
   timeEntries TimeEntry[]
 
-  @@map("projects")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
+
+  timeEntries   TimeEntry[]
+  clients       Client[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
 }

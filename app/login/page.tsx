@@ -8,11 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { FaDiscord, FaMicrosoft, FaGoogle, FaGithub } from 'react-icons/fa';
-import { signInWithGithub } from '@/lib/server/auth';
-import { startTransition } from 'react';
+import { Github, Loader } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 
 export default function LoginPage(): JSX.Element {
+  const [isGitHubLoading, setIsGitHubLoading] = useState<boolean>(false);
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-[380px]">
@@ -29,26 +31,17 @@ export default function LoginPage(): JSX.Element {
             <Button
               variant="outline"
               onClick={() => {
-                startTransition(() => {
-                  void signInWithGithub();
-                });
+                setIsGitHubLoading(true);
+                signIn('github');
               }}
             >
-              <FaGithub className="mr-2 h-4 w-4" />
+              {isGitHubLoading ? (
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Github className="mr-2 h-4 w-4" />
+              )}{' '}
               Github
             </Button>
-            {/* <Button variant="outline">
-              <FaGoogle className="mr-2 h-4 w-4" />
-              Google
-            </Button>
-            <Button variant="outline">
-              <FaDiscord className="mr-2 h-4 w-4" />
-              Discord
-            </Button>
-            <Button variant="outline">
-              <FaMicrosoft className="mr-2 h-4 w-4" />
-              Microsoft
-            </Button> */}
           </div>
         </CardContent>
       </Card>
