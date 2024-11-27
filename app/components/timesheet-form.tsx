@@ -6,6 +6,7 @@ import { PlusCircle, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +28,7 @@ import {
 } from '@/components/ui/select';
 import { formatDateDDMMYYYY, parseDateDDMMYYYY } from '@/lib/utils/date';
 import { format } from 'date-fns';
-import { TimeEntryFormData } from '@/lib/types';
+import { TimeEntryData } from '@/lib/types';
 
 const entrySchema = z.object({
   clientId: z.string().min(1, 'Client is required'),
@@ -59,9 +60,9 @@ interface Option {
 
 interface TimesheetFormProps {
   week: Date[];
-  onSave: (entries: TimeEntryFormData[]) => Promise<void>;
-  onDelete: (entry: TimeEntryFormData) => Promise<void>;
-  initialEntries: TimeEntryFormData[];
+  onSave: (entries: TimeEntryData[]) => Promise<void>;
+  onDelete: (entry: TimeEntryData) => Promise<void>;
+  initialEntries: TimeEntryData[];
   clients: Option[];
   projects: Option[];
 }
@@ -93,11 +94,8 @@ const TimesheetForm = ({
     }
 
     const newEntry = {
-      clientId:
-        clients.find(client => client.value === entry.clientId)?.value ?? '',
-      projectId:
-        projects.find(project => project.value === entry.projectId)?.value ??
-        '',
+      clientId: entry.clientId,
+      projectId: entry.projectId,
       hours: String(entry.hours),
     };
 
@@ -109,6 +107,8 @@ const TimesheetForm = ({
       initialFormValues[dateKey]?.push(newEntry);
     }
   });
+
+  console.log('initialFormValues', initialFormValues);
 
   const form = useForm<TimesheetSchema>({
     resolver: zodResolver(timesheetSchema),
@@ -134,7 +134,7 @@ const TimesheetForm = ({
       console.log('entries', entries);
 
       if (entries.length > 0) {
-        await onSave(entries as TimeEntryFormData[]);
+        await onSave(entries as TimeEntryData[]);
       }
     } catch (error) {
       console.error('Failed to auto-save:', error);
@@ -173,7 +173,7 @@ const TimesheetForm = ({
         projectId: entry.projectId,
         hours: parseFloat(entry.hours),
         date: parseDateDDMMYYYY(dateKey),
-      } as TimeEntryFormData);
+      } as TimeEntryData);
       // Remove entry at specific index
       const currentEntries = form.getValues(dateKey) || [];
       const updatedEntries = currentEntries.filter((_, i) => i !== index);

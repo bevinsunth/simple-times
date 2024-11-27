@@ -2,7 +2,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
-import { type TimeEntryFormData } from '@/lib/types';
+import { type TimeEntryData } from '@/lib/types';
 import { parseDateDDMMYYYY } from '@/lib/utils/date';
 
 const styles = StyleSheet.create({
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 });
 
 interface TimesheetPDFProps {
-  data: TimeEntryFormData[];
+  data: TimeEntryData[];
   startDate: Date;
   endDate: Date;
 }

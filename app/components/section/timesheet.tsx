@@ -6,22 +6,10 @@ import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
 import type React from 'react';
-import { useTimesheetStore } from '@/lib/client/store';
-import SaveStatusAlert from '../save-status-alert';
+import { useClientStore, useTimesheetStore } from '@/lib/client/store';
 import { useEffect } from 'react';
-import { Option, TimeEntryData } from '@/lib/types';
-// Placeholder data for clients and projects
-const clients: Option[] = [
-  { value: 'client1', label: 'Client 1' },
-  { value: 'client2', label: 'Client 2' },
-  { value: 'client3', label: 'Client 3' },
-];
-
-const projects: Option[] = [
-  { value: 'project1', label: 'Project 1' },
-  { value: 'project2', label: 'Project 2' },
-  { value: 'project3', label: 'Project 3' },
-];
+import { TimeEntryData } from '@/lib/types';
+import SaveStatusAlert from '../save-status-alert';
 
 const TimeSheet: React.FC = () => {
   const {
@@ -35,6 +23,8 @@ const TimeSheet: React.FC = () => {
     saveEntries,
   } = useTimesheetStore();
 
+  const { clientAndProjectList, fetchClientAndProjectList } = useClientStore();
+
   const handleSave = async (data: TimeEntryData[]): Promise<void> => {
     await saveEntries(data);
   };
@@ -46,6 +36,23 @@ const TimeSheet: React.FC = () => {
   useEffect(() => {
     setCurrentDate(new Date());
   }, [setCurrentDate]);
+
+  useEffect(() => {
+    fetchClientAndProjectList();
+  }, [fetchClientAndProjectList]);
+
+  const clients = clientAndProjectList.map(item => ({
+    value: item.client.id ?? '',
+    label: item.client.name,
+  }));
+  const projects = clientAndProjectList
+    .map(item =>
+      item.projects.map(project => ({
+        value: project.id ?? '',
+        label: project.name,
+      }))
+    )
+    .flat();
 
   return (
     <>

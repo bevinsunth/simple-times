@@ -19,7 +19,7 @@ import type {
   ProjectData,
   TimeEntryData,
 } from '@/lib/types';
-import { Client, Project } from '@prisma/client';
+import { Project } from '@prisma/client';
 
 const generateTimeEntryId = (entry: TimeEntryData): string => {
   return `${entry.date.toISOString()}-${entry.clientId}-${entry.projectId}`;
@@ -118,6 +118,7 @@ export const addNewClient = async (
 };
 
 export const deleteExistingClient = async (id: string): Promise<void> => {
+  console.log('deleteExistingClient', id);
   await deleteClient(id);
 };
 
@@ -127,5 +128,6 @@ export const addNewProject = async (project: ProjectData): Promise<Project> => {
   return newProject;
 };
 export const deleteExistingProject = async (id: string): Promise<void> => {
+  console.log('deleteExistingProject', id);
   await deleteProject(id);
 };
