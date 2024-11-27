@@ -25,7 +25,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { pdf } from '@react-pdf/renderer';
 import TimesheetPDF from '../timesheet-pdf';
-import { getEntries } from '@/lib/server/timesheet';
+import { getEntries } from '@/lib/utils/operations';
 
 export default function ReportGeneration(): JSX.Element {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -47,14 +47,8 @@ export default function ReportGeneration(): JSX.Element {
     setReport(null);
 
     try {
-      // Create array of all dates between start and end date
-      const dateRange = eachDayOfInterval({
-        start: date.from,
-        end: date.to,
-      });
-
       // Get entries for the date range
-      const data = await getEntries(dateRange);
+      const data = await getEntries(date.from, date.to);
 
       if (!data || data.length === 0) {
         setError('No entries found for the selected date range');

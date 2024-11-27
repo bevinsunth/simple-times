@@ -6,10 +6,10 @@ import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
 import type React from 'react';
-import { useTimesheetStore } from '@/lib/client/timesheet';
+import { useTimesheetStore } from '@/lib/client/store';
 import SaveStatusAlert from '../save-status-alert';
 import { useEffect } from 'react';
-import { Option, TimeEntryFormData } from '@/lib/types';
+import { Option, TimeEntryData } from '@/lib/types';
 // Placeholder data for clients and projects
 const clients: Option[] = [
   { value: 'client1', label: 'Client 1' },
@@ -35,11 +35,11 @@ const TimeSheet: React.FC = () => {
     saveEntries,
   } = useTimesheetStore();
 
-  const handleSave = async (data: TimeEntryFormData[]): Promise<void> => {
+  const handleSave = async (data: TimeEntryData[]): Promise<void> => {
     await saveEntries(data);
   };
 
-  const handleDelete = async (entry: TimeEntryFormData): Promise<void> => {
+  const handleDelete = async (entry: TimeEntryData): Promise<void> => {
     await deleteEntry(entry);
   };
 

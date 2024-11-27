@@ -1,5 +1,5 @@
-import { Client, Project, User } from '@prisma/client/edge';
-import { TimeEntryData } from '../types';
+import { User, Client, Project } from '@prisma/client';
+import { ClientData, ProjectData, TimeEntryData } from '../types';
 import { db } from '@/lib/db';
 //ToDo: Add cache strategy
 
@@ -54,7 +54,7 @@ export const upsertTimeEntry = async (
 
 //Delete time entry
 export const deleteTimeEntry = async (id: string): Promise<void> => {
-  await prisma.timeEntry.delete({ where: { id } });
+  await db.timeEntry.delete({ where: { id } });
 };
 
 //Add user
@@ -63,9 +63,18 @@ export const addUser = async (user: User): Promise<User> => {
   return newUser;
 };
 
+//Get clients
+export const getClients = async (userId: string): Promise<Client[]> => {
+  const clients = await db.client.findMany({ where: { userId } });
+  return clients;
+};
+
 //Add client
-export const addClient = async (client: Client): Promise<Client> => {
-  const newClient = await db.client.create({ data: client });
+export const addClient = async (
+  client: ClientData,
+  userId: string
+): Promise<Client> => {
+  const newClient = await db.client.create({ data: { ...client, userId } });
   return newClient;
 };
 
@@ -74,8 +83,16 @@ export const deleteClient = async (id: string): Promise<void> => {
   await db.client.delete({ where: { id } });
 };
 
+//Get projects
+export const getProjects = async (clientId: string): Promise<Project[]> => {
+  const projects = await db.project.findMany({
+    where: { clientId },
+  });
+  return projects;
+};
+
 //Add project
-export const addProject = async (project: Project): Promise<Project> => {
+export const addProject = async (project: ProjectData): Promise<Project> => {
   const newProject = await db.project.create({ data: project });
   return newProject;
 };
