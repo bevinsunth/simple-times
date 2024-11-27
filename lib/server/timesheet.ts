@@ -11,9 +11,15 @@ import {
 
 import type { TimeEntryData, TimeEntryFormData } from '@/lib/types';
 
+const generateTimeEntryId = (entry: TimeEntryFormData): string => {
+  return `${entry.date.toISOString()}-${entry.clientId}-${entry.projectId}`;
+};
+
 export const saveEntries = async (
   entries: TimeEntryFormData[]
 ): Promise<TimeEntryData[] | undefined> => {
+  console.log('entries', entries);
+
   const validEntries = entries.filter(entry => {
     const isValidHours = !isNaN(entry.hours) && entry.hours > 0;
     const isValidClient = entry.clientId.trim() !== '';
@@ -35,40 +41,38 @@ export const saveEntries = async (
 
   const enrichedEntries = validEntries.map(entry => ({
     ...entry,
-    id: getUniqueTimeEntryIdentifier(entry),
+    id: generateTimeEntryId(entry),
   }));
 
   // Update the matched documents and create new ones
   await upsertTimeEntries(enrichedEntries, user.$id);
+  return enrichedEntries;
 };
 
 export async function getEntries(
   startDate: Date,
   endDate: Date
 ): Promise<TimeEntryData[]> {
-  if (startDate === undefined || endDate === undefined) {
+  if (!startDate || !endDate) {
     error('No start or end date provided');
     return [];
   }
 
   const user = await getLoggedInUser();
-  if (user === null) {
+  if (!user) {
     error('User not logged in');
     return [];
   }
 
   const entries = await getTimeEntries(user.$id, {
-    startDate: startDate,
-    endDate: endDate,
+    startDate,
+    endDate,
   });
 
   return entries;
 }
 
-export const deleteEntry = async (id: string): Promise<void> => {
+export const deleteEntry = async (entry: TimeEntryFormData): Promise<void> => {
+  const id = generateTimeEntryId(entry);
   await deleteTimeEntry(id);
-};
-
-const getUniqueTimeEntryIdentifier = (entry: TimeEntryFormData): string => {
-  return `${entry.date.toISOString()}-${entry.clientId}-${entry.projectId}`;
 };

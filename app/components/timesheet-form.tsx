@@ -41,7 +41,7 @@ const entrySchema = z.object({
       return !isNaN(hours) && hours >= 0 && hours <= 24;
     },
     {
-      message: 'Hours must be a number between 0 and 24',
+      message: 'hours must be a number between 0 and 24',
     }
   ),
 });
@@ -93,9 +93,12 @@ const TimesheetForm = ({
     }
 
     const newEntry = {
-      clientId: entry.clientId,
-      projectId: entry.projectId,
-      hours: entry.hours.toString(),
+      clientId:
+        clients.find(client => client.value === entry.clientId)?.value ?? '',
+      projectId:
+        projects.find(project => project.value === entry.projectId)?.value ??
+        '',
+      hours: String(entry.hours),
     };
 
     if (dateEntries?.length === 1 && !dateEntries[0].clientId) {
@@ -116,6 +119,7 @@ const TimesheetForm = ({
   const handleAutoSave = useDebouncedCallback(async (): Promise<void> => {
     try {
       const data = form.getValues();
+      console.log('data', data);
       const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
         dayEntries
           .filter(entry => entry.clientId && entry.projectId && entry.hours)
@@ -126,6 +130,8 @@ const TimesheetForm = ({
             hours: parseFloat(entry.hours),
           }))
       );
+
+      console.log('entries', entries);
 
       if (entries.length > 0) {
         await onSave(entries as TimeEntryFormData[]);
@@ -141,8 +147,8 @@ const TimesheetForm = ({
         const [dateKey, index] = name.split('.').slice(0, 2);
         void Promise.all([
           form.trigger(`${dateKey}.${index}.hours`),
-          form.trigger(`${dateKey}.${index}.client`),
-          form.trigger(`${dateKey}.${index}.project`),
+          form.trigger(`${dateKey}.${index}.clientId`),
+          form.trigger(`${dateKey}.${index}.projectId`),
         ]).then(([hoursValid, clientValid, projectValid]) => {
           if (hoursValid && clientValid && projectValid) {
             void handleAutoSave();
@@ -163,7 +169,8 @@ const TimesheetForm = ({
     try {
       const entry = form.getValues(`${dateKey}.${index}`);
       await onDelete({
-        ...entry,
+        clientId: entry.clientId,
+        projectId: entry.projectId,
         hours: parseFloat(entry.hours),
         date: parseDateDDMMYYYY(dateKey),
       } as TimeEntryFormData);
@@ -192,7 +199,7 @@ const TimesheetForm = ({
                     <div key={index} className="grid grid-cols-4 gap-4 mb-4">
                       <FormField
                         control={form.control}
-                        name={`${dateKey}.${index}.client`}
+                        name={`${dateKey}.${index}.clientId`}
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Client</FormLabel>
@@ -222,7 +229,7 @@ const TimesheetForm = ({
                       />
                       <FormField
                         control={form.control}
-                        name={`${dateKey}.${index}.project`}
+                        name={`${dateKey}.${index}.projectId`}
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Project</FormLabel>

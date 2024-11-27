@@ -13,7 +13,7 @@ CREATE TABLE "time_entries" (
     "date" DATETIME NOT NULL,
     "clientId" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
-    "duration" INTEGER,
+    "hours" REAL,
     "description" TEXT,
     "userId" TEXT NOT NULL,
     CONSTRAINT "time_entries_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "clients" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,

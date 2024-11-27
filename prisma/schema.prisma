@@ -1,10 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  engineType = "library"
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
+  engineType      = "library"
 }
 
 datasource db {
@@ -13,9 +10,9 @@ datasource db {
 }
 
 model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  name  String?
+  id      String   @id @default(uuid())
+  email   String   @unique
+  name    String?
   clients Client[]
 
   @@map("users")
@@ -25,38 +22,34 @@ model TimeEntry {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
-  // Time tracking fields
   date        DateTime
   clientId    String
-  client      Client @relation(fields: [clientId], references: [id])
   projectId   String
-  project     Project @relation(fields: [projectId], references: [id])
-  duration    Int?     // Duration in hours
-  
-  // Description and categorization
+  hours       Float?
   description String?
-  userId      String   // User who created the entry
-  
-  @@map("time_entries") // Defines the table name in the database
+  userId      String
+  project     Project  @relation(fields: [projectId], references: [id])
+  client      Client   @relation(fields: [clientId], references: [id])
+
+  @@map("time_entries")
 }
 
 model Client {
-  id    String  @id @default(uuid())
-  name  String
-  userId String
-  user  User @relation(fields: [userId], references: [id])
-  timeEntries TimeEntry[]
+  id          String      @id @default(uuid())
+  name        String
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
   projects    Project[]
+  timeEntries TimeEntry[]
 
   @@map("clients")
 }
 
 model Project {
-  id    String  @id @default(uuid())
-  name  String
-  clientId String
-  client  Client @relation(fields: [clientId], references: [id])
+  id          String      @id @default(uuid())
+  name        String
+  clientId    String
+  client      Client      @relation(fields: [clientId], references: [id])
   timeEntries TimeEntry[]
 
   @@map("projects")

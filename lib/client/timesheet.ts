@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { deleteEntry, getEntries, saveEntries } from '@/lib/server/timesheet';
-import { TimeEntryData } from '../types';
+import { TimeEntryData, TimeEntryFormData } from '../types';
 
 interface TimesheetState {
   currentDate: Date;
@@ -11,9 +11,9 @@ interface TimesheetState {
   weekDays: Date[];
   setCurrentDate: (date: Date) => void;
   setEntries: (entries: TimeEntryData[]) => void;
-  deleteEntry: (entry: TimeEntryData) => Promise<void>;
+  deleteEntry: (entry: TimeEntryFormData) => Promise<void>;
   fetchEntries: () => Promise<void>;
-  saveEntries: (entries: TimeEntryData[]) => Promise<void>;
+  saveEntries: (entries: TimeEntryFormData[]) => Promise<void>;
 }
 
 export const useTimesheetStore = create<TimesheetState>((set, get) => ({
@@ -43,15 +43,27 @@ export const useTimesheetStore = create<TimesheetState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-  saveEntries: async (entries: TimeEntryData[]): Promise<void> => {
+  saveEntries: async (entries: TimeEntryFormData[]): Promise<void> => {
     set({ isSaving: 'saving' });
     await saveEntries(entries);
     set({ isSaving: 'saved' });
   },
-  deleteEntry: async (entry: TimeEntryData): Promise<void> => {
+  deleteEntry: async (entry: TimeEntryFormData): Promise<void> => {
     set({ isSaving: 'saving' });
     try {
-      await deleteEntry(entry.id);
+      //find entry by date and projectId and clientId
+      const matchedEntry = get().entries.find(
+        e =>
+          e.date === entry.date &&
+          e.projectId === entry.projectId &&
+          e.clientId === entry.clientId
+      );
+      if (matchedEntry) {
+        await deleteEntry(matchedEntry);
+        set({
+          entries: get().entries.filter(e => e.date !== entry.date),
+        });
+      }
       set({ isSaving: 'saved' });
     } catch (error) {
       set({ isSaving: 'error' });

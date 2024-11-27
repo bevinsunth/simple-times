@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { TimeSheetFormEntry } from '@/lib/server/timesheet';
 
 import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
@@ -10,12 +9,7 @@ import type React from 'react';
 import { useTimesheetStore } from '@/lib/client/timesheet';
 import SaveStatusAlert from '../save-status-alert';
 import { useEffect } from 'react';
-
-interface Option {
-  value: string;
-  label: string;
-}
-
+import { Option, TimeEntryFormData } from '@/lib/types';
 // Placeholder data for clients and projects
 const clients: Option[] = [
   { value: 'client1', label: 'Client 1' },
@@ -37,19 +31,16 @@ const TimeSheet: React.FC = () => {
     entries,
     weekDays,
     setCurrentDate,
-    setEntries,
     deleteEntry,
     saveEntries,
   } = useTimesheetStore();
 
-  const handleSave = async (data: TimeSheetFormEntry[]): Promise<void> => {
+  const handleSave = async (data: TimeEntryFormData[]): Promise<void> => {
     await saveEntries(data);
-    setEntries(data);
   };
 
-  const handleDelete = async (entry: TimeSheetFormEntry): Promise<void> => {
+  const handleDelete = async (entry: TimeEntryFormData): Promise<void> => {
     await deleteEntry(entry);
-    setEntries(entries.filter(e => e.date !== entry.date));
   };
 
   useEffect(() => {

@@ -28,3 +28,8 @@ export type ProjectData = Data<Project>;
 
 //Used in the client
 export type TimeEntryFormData = Omit<TimeEntryData, 'id'>;
+
+export interface Option {
+  value: string; // This is what gets stored as clientId/projectId
+  label: string; // This is what gets displayed to the user
+}
