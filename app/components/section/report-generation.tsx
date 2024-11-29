@@ -25,7 +25,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { pdf } from '@react-pdf/renderer';
 import TimesheetPDF from '../timesheet-pdf';
-import { getEntries } from '@/lib/utils/operations';
+import { getEntries, getClientAndProjectList } from '@/lib/utils/operations';
+import { getClients } from '@/lib/utils/query';
 
 export default function ReportGeneration(): JSX.Element {
   const [date, setDate] = useState<DateRange | undefined>({
@@ -35,6 +36,50 @@ export default function ReportGeneration(): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const generatePDF = async (
+    data: any,
+    startDate: Date,
+    endDate: Date
+  ): Promise<void> => {
+    try {
+      const clients = await getClientAndProjectList();
+      const enrichedData = data.map(entry => ({
+        ...entry,
+        clientName: clients.find(client => client.client.id === entry.clientId)
+          ?.client.name,
+        projectName: clients
+          .find(client => client.client.id === entry.clientId)
+          ?.projects.find(project => project.id === entry.projectId)?.name,
+      }));
+
+      const reportContent = `Report for ${format(startDate, 'PPP')} to ${format(endDate, 'PPP')}`;
+      setReport(reportContent);
+
+      // Generate PDF blob
+      const blob = await pdf(
+        <TimesheetPDF
+          data={enrichedData}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      ).toBlob();
+
+      // Create and download file
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `report-${format(startDate, 'yyyy-MM-dd')}-to-${format(endDate, 'yyyy-MM-dd')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      π;
+      console.error('Error generating PDF:', error);
+      setError('Failed to generate the report. Please try again.');
+    }
+  };
 
   const handleDownloadReport = async (): Promise<void> => {
     if (!date?.from || !date?.to) {
@@ -56,23 +101,7 @@ export default function ReportGeneration(): JSX.Element {
       }
 
       if (data) {
-        const reportContent = `Report for ${format(date.from, 'PPP')} to ${format(date.to, 'PPP')}`;
-        setReport(reportContent);
-
-        // Generate PDF blob
-        const blob = await pdf(
-          <TimesheetPDF data={data} startDate={date.from} endDate={date.to} />
-        ).toBlob();
-
-        // Create and download file
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `report-${format(date.from, 'yyyy-MM-dd')}-to-${format(date.to, 'yyyy-MM-dd')}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        await generatePDF(data, date.from, date.to);
       } else {
         setError('No data available for the selected period');
       }

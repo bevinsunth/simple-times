@@ -55,8 +55,13 @@ const styles = StyleSheet.create({
   },
 });
 
+interface TimeEntryDataWithClientAndProject extends TimeEntryData {
+  clientName: string;
+  projectName: string;
+}
+
 interface TimesheetPDFProps {
-  data: TimeEntryData[];
+  data: TimeEntryDataWithClientAndProject[];
   startDate: Date;
   endDate: Date;
 }
@@ -104,10 +109,10 @@ const TimesheetPDF = ({
                   <Text>{format(new Date(entry.date), 'EEEE')}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.clientCell]}>
-                  <Text>{entry.clientId}</Text>
+                  <Text>{entry.clientName}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.projectCell]}>
-                  <Text>{entry.projectId}</Text>
+                  <Text>{entry.projectName}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.hoursCell]}>
                   <Text>{entry.hours.toString()}</Text>
