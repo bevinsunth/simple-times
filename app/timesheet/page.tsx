@@ -8,11 +8,9 @@ import type React from 'react';
 const Home = (): JSX.Element => {
   return (
     <div className="flex">
-      <Sidebar className="w-64 border-r" />
-      <div className="flex-1">
-        <div className="container p-4">
-          <TimeSheet />
-        </div>
+      <Sidebar />
+      <div className="container p-4">
+        <TimeSheet />
       </div>
     </div>
   );
