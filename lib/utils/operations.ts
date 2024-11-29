@@ -26,7 +26,7 @@ const generateTimeEntryId = (entry: TimeEntryData): string => {
 };
 
 export const saveEntries = async (
-  entries: TimeEntryFormData[]
+  entries: TimeEntryData[]
 ): Promise<TimeEntryData[] | undefined> => {
   console.log('entries', entries);
 
@@ -41,7 +41,6 @@ export const saveEntries = async (
   const userData = await getLoggedInUser();
 
   if (!userData) {
-    error('User not logged in');
     return [];
   }
 

@@ -4,10 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 
 model TimeEntry {
   id          String   @id @default(cuid())
@@ -15,7 +14,7 @@ model TimeEntry {
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade )
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   hours       Float
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -32,7 +31,6 @@ model Client {
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   projects    Project[]
   timeEntries TimeEntry[]
-
 }
 
 model Project {
