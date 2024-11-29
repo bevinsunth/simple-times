@@ -8,7 +8,7 @@ import type React from 'react';
 const Home = (): JSX.Element => {
   return (
     <div className="flex">
-      <Sidebar className="w-64 border-r" />
+      <Sidebar />
       <div className="flex-1">
         <div className="flex min-h-screen items-center justify-center">
           <ReportGeneration />

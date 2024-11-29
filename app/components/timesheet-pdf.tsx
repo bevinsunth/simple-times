@@ -93,17 +93,15 @@ const TimesheetPDF = ({
               <Text>Hours</Text>
             </View>
           </View>
-          \{/* Table Body */}
+          {/* Table Body */}
           {data.map((entry, index) => {
             return (
               <View key={index} style={styles.tableRow}>
                 <View style={[styles.tableCell, styles.dateCell]}>
-                  <Text>{format(entry.date, 'dd/MM/yyyy')}</Text>
+                  <Text>{format(new Date(entry.date), 'dd/MM/yyyy')}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.dayCell]}>
-                  <Text>
-                    {format(parseDateDDMMYYYY(entry.date.toString()), 'EEEE')}
-                  </Text>
+                  <Text>{format(new Date(entry.date), 'EEEE')}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.clientCell]}>
                   <Text>{entry.clientId}</Text>
@@ -112,7 +110,7 @@ const TimesheetPDF = ({
                   <Text>{entry.projectId}</Text>
                 </View>
                 <View style={[styles.tableCell, styles.hoursCell]}>
-                  <Text>{entry.hours}</Text>
+                  <Text>{entry.hours.toString()}</Text>
                 </View>
               </View>
             );

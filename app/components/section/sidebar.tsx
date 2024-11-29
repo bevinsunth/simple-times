@@ -9,12 +9,12 @@ export function Sidebar({
   className,
 }: React.HTMLAttributes<HTMLDivElement>): JSX.Element {
   return (
-    <div className="pb-12 flex flex-col sticky top-0 h-full">
+    <div className="pb-12 flex flex-col sticky top-0 max-h-screen">
       <div className="space-y-4 py-4 flex-grow">
         <div className="px-3 py-2">
           <h2 className="mb-2 px-4 text-lg font-semibold">Dashboard</h2>
           <div className="space-y-1 flex flex-col">
-            <Link href="/">
+            <Link href="/timesheet">
               <Button variant="ghost">
                 <Calendar className="mr-2 h-4 w-4" />
                 Timesheet

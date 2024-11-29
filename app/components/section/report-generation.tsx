@@ -68,7 +68,7 @@ export default function ReportGeneration(): JSX.Element {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `report-${format(date.from, 'yyyy-MM-dd')}-to-${format(date.to, 'yyyy-MM-dd')}.txt`;
+        a.download = `report-${format(date.from, 'yyyy-MM-dd')}-to-${format(date.to, 'yyyy-MM-dd')}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
