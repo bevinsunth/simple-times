@@ -16,6 +16,7 @@
     "lint:fix": "eslint . --fix && prettier --write .",
     "format": "prettier --write .",
     "fix": "pnpm format && pnpm lint:fix",
+    "postinstall": "prisma generate",
     "prisma:generate": "dotenv -e .env.local -- npx prisma generate",
     "prisma:push": "pnpm dotenv -e .env.local -- npx prisma db push"
   },
