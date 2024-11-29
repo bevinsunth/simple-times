@@ -75,7 +75,6 @@ export default function ReportGeneration(): JSX.Element {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
-      π;
       console.error('Error generating PDF:', error);
       setError('Failed to generate the report. Please try again.');
     }
