@@ -8,54 +8,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TimeEntry {
+model st_TimeEntry {
   id          String   @id @default(cuid())
   date        DateTime
   clientId    String
-  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client      st_Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     st_Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   hours       Float
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        st_User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
 }
 
-model Client {
+model st_Client {
   id          String      @id @default(uuid())
   name        String
   userId      String
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects    Project[]
-  timeEntries TimeEntry[]
+  user        st_User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects    st_Project[]
+  timeEntries st_TimeEntry[]
 }
 
-model Project {
+model st_Project {
   id          String      @id @default(uuid())
   name        String
   clientId    String
-  client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  timeEntries TimeEntry[]
+  client      st_Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  timeEntries st_TimeEntry[]
 }
 
-model User {
+model st_User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Authenticator Authenticator[]
+  accounts      st_Account[]
+  sessions      st_Session[]
+  Authenticator st_Authenticator[]
 
-  timeEntries   TimeEntry[]
-  clients       Client[]
+  timeEntries   st_TimeEntry[]
+  clients       st_Client[]
 }
 
-model Account {
+model st_Account {
   userId            String
   type              String
   provider          String
@@ -68,19 +68,19 @@ model Account {
   id_token          String?
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user st_User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
 
-model Session {
+model st_Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         st_User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model VerificationToken {
+model st_VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
@@ -88,7 +88,7 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-model Authenticator {
+model st_Authenticator {
   credentialID         String  @unique
   userId               String
   providerAccountId    String
@@ -98,7 +98,7 @@ model Authenticator {
   credentialBackedUp   Boolean
   transports           String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user st_User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
 }
