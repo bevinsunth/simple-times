@@ -196,7 +196,7 @@ const TimesheetForm = ({
                 </CardHeader>
                 <CardContent>
                   {form.watch(dateKey)?.map((_, index) => (
-                    <div key={index} className="grid grid-cols-4 gap-4 mb-4">
+                    <div key={index} className="mb-4 grid grid-cols-4 gap-4">
                       <FormField
                         control={form.control}
                         name={`${dateKey}.${index}.clientId`}
@@ -285,7 +285,7 @@ const TimesheetForm = ({
                               void handleDeleteEntry(dateKey, index);
                             }}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="size-4" />
                           </Button>
                         )}
                       </div>
@@ -304,7 +304,7 @@ const TimesheetForm = ({
                       ]);
                     }}
                   >
-                    <PlusCircle className="w-4 h-4 mr-2" />
+                    <PlusCircle className="mr-2 size-4" />
                     Add Entry
                   </Button>
                 </CardContent>

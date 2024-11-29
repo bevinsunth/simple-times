@@ -113,7 +113,7 @@ export default function ReportGeneration(): JSX.Element {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
+    <Card className="mx-auto w-full max-w-lg">
       <CardHeader>
         <CardTitle>Generate Report</CardTitle>
         <CardDescription>
@@ -134,7 +134,7 @@ export default function ReportGeneration(): JSX.Element {
                 )}
                 aria-label="Select date range"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+                <CalendarIcon className="mr-2 size-4" />
                 {date?.from ? (
                   date.to ? (
                     <>
@@ -169,12 +169,12 @@ export default function ReportGeneration(): JSX.Element {
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Generating Report
             </>
           ) : (
             <>
-              <Download className="mr-2 h-4 w-4" />
+              <Download className="mr-2 size-4" />
               Download Report
             </>
           )}
@@ -188,7 +188,7 @@ export default function ReportGeneration(): JSX.Element {
           </Alert>
         )}
         {report && (
-          <Alert className="w-full mb-4" role="status">
+          <Alert className="mb-4 w-full" role="status">
             <AlertTitle>Report Generated</AlertTitle>
             <AlertDescription>{report}</AlertDescription>
           </Alert>

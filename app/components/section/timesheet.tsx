@@ -81,12 +81,12 @@ const SkeletonLoader: React.FC = () => {
       {Array.from({ length: 7 }).map((_, i) => (
         <Card key={i}>
           <CardHeader>
-            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-6 w-1/4 rounded bg-gray-200"></div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, j) => (
-                <div key={j} className="h-10 bg-gray-200 rounded"></div>
+                <div key={j} className="h-10 rounded bg-gray-200"></div>
               ))}
             </div>
           </CardContent>

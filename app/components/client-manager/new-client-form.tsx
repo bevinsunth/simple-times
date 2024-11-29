@@ -54,7 +54,7 @@ export function NewClientForm({ onAddClient }: NewClientFormProps) {
           )}
         />
         <Button type="submit">
-          <PlusCircle className="h-4 w-4 mr-2" />
+          <PlusCircle className="mr-2 size-4" />
           Add Client
         </Button>
       </form>

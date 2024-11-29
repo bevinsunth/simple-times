@@ -16,10 +16,10 @@ export default function LoginPage(): JSX.Element {
   const [isGitHubLoading, setIsGitHubLoading] = useState<boolean>(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <Card className="w-[380px]">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">
+          <CardTitle className="text-center text-2xl">
             Welcome to SimpleTimes
           </CardTitle>
           <CardDescription className="text-center">
@@ -36,9 +36,9 @@ export default function LoginPage(): JSX.Element {
               }}
             >
               {isGitHubLoading ? (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 size-4 animate-spin" />
               ) : (
-                <Github className="mr-2 h-4 w-4" />
+                <Github className="mr-2 size-4" />
               )}{' '}
               Github
             </Button>

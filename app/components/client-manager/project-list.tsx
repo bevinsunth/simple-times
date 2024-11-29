@@ -37,7 +37,7 @@ export function ProjectList({
   };
 
   return (
-    <div className="pl-6 border-l-2 border-gray-200 ml-2 mt-2 space-y-2">
+    <div className="ml-2 mt-2 space-y-2 border-l-2 border-gray-200 pl-6">
       {projects.map(project => (
         <div key={project.id} className="flex items-center justify-between">
           <span>{project.name}</span>
@@ -46,7 +46,7 @@ export function ProjectList({
             size="sm"
             onClick={() => onDeleteProject(clientId, project.id)}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="size-4" />
           </Button>
         </div>
       ))}
@@ -78,7 +78,7 @@ export function ProjectList({
             type="button"
             onClick={() => handleAddProject(form.getValues('newProject'))}
           >
-            <PlusCircle className="h-4 w-4 mr-2" />
+            <PlusCircle className="mr-2 size-4" />
             Add Project
           </Button>
         </form>

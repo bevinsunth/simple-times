@@ -65,19 +65,19 @@ const SaveStatusAlert: React.FC<SaveStatusAlertProps> = ({
     >
       {status === 'saving' && (
         <>
-          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+          <Loader2 className="size-4 animate-spin text-blue-500" />
           <span className="text-sm font-medium text-blue-700">Saving...</span>
         </>
       )}
       {status === 'saved' && (
         <>
-          <CheckCircle className="h-4 w-4 text-green-500" />
+          <CheckCircle className="size-4 text-green-500" />
           <span className="text-sm font-medium text-green-700">Saved</span>
         </>
       )}
       {status === 'error' && (
         <>
-          <AlertCircle className="h-4 w-4 text-red-500" />
+          <AlertCircle className="size-4 text-red-500" />
           <span className="text-sm font-medium text-red-700">Error saving</span>
         </>
       )}

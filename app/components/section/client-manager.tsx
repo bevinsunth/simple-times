@@ -30,7 +30,7 @@ export default function ClientProjectManager(): JSX.Element {
   }, [fetchClientAndProjectList]);
 
   return (
-    <div className="space-y-4 w-full max-w-2xl mx-auto p-4">
+    <div className="mx-auto w-full max-w-2xl space-y-4 p-4">
       <Card>
         <CardHeader>
           <CardTitle>Client and Project Manager</CardTitle>
@@ -49,16 +49,16 @@ export default function ClientProjectManager(): JSX.Element {
                 open={expandedClients[client.id ?? '']}
                 onOpenChange={() => toggleClientExpanded(client.id ?? '')}
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
                       className="p-0 hover:bg-transparent"
                     >
                       {expandedClients[client.id ?? ''] ? (
-                        <ChevronDown className="h-4 w-4 mr-2" />
+                        <ChevronDown className="mr-2 size-4" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 mr-2" />
+                        <ChevronRight className="mr-2 size-4" />
                       )}
                       {client.name}
                     </Button>
@@ -68,7 +68,7 @@ export default function ClientProjectManager(): JSX.Element {
                     size="sm"
                     onClick={async () => await deleteClient(client.id ?? '')}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="size-4" />
                   </Button>
                 </div>
                 <CollapsibleContent>

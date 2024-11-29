@@ -19,7 +19,7 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   onDateChange,
 }) => {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="mb-4 flex items-center justify-between">
       <Button onClick={() => onDateChange(subWeeks(currentDate, 1))}>
         Previous Week
       </Button>

@@ -14,7 +14,7 @@ export function AccountOptionsDropdown(): JSX.Element {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          <Avatar className="mr-2 h-6 w-6">
+          <Avatar className="mr-2 size-6">
             <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
@@ -23,12 +23,12 @@ export function AccountOptionsDropdown(): JSX.Element {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuItem>
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 size-4" />
           <span>Logout</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600">
-          <Trash2 className="mr-2 h-4 w-4" />
+          <Trash2 className="mr-2 size-4" />
           <span>Delete Account</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
