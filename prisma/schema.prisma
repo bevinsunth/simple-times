@@ -8,54 +8,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model st_TimeEntry {
+model TimeEntry {
   id          String   @id @default(cuid())
   date        DateTime
   clientId    String
-  client      st_Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String
-  project     st_Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   hours       Float
   userId      String
-  user        st_User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
+
+  @@map("st_time_entries")
 }
 
-model st_Client {
+model Client {
   id          String      @id @default(uuid())
   name        String
   userId      String
-  user        st_User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects    st_Project[]
-  timeEntries st_TimeEntry[]
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects    Project[]
+  timeEntries TimeEntry[]
+
+  @@map("st_clients")
 }
 
-model st_Project {
+model Project {
   id          String      @id @default(uuid())
   name        String
   clientId    String
-  client      st_Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  timeEntries st_TimeEntry[]
+  client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  timeEntries TimeEntry[]
+
+  @@map("st_projects")
 }
 
-model st_User {
+model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  accounts      st_Account[]
-  sessions      st_Session[]
-  Authenticator st_Authenticator[]
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
 
-  timeEntries   st_TimeEntry[]
-  clients       st_Client[]
+  timeEntries   TimeEntry[]
+  clients       Client[]
+
+  @@map("st_users")
 }
 
-model st_Account {
+model Account {
   userId            String
   type              String
   provider          String
@@ -68,27 +76,33 @@ model st_Account {
   id_token          String?
   session_state     String?
 
-  user st_User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
+
+  @@map("st_accounts")
 }
 
-model st_Session {
+model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         st_User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("st_sessions")
 }
 
-model st_VerificationToken {
+model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
 
   @@id([identifier, token])
+
+  @@map("st_verification_tokens")
 }
 
-model st_Authenticator {
+model Authenticator {
   credentialID         String  @unique
   userId               String
   providerAccountId    String
@@ -98,7 +112,9 @@ model st_Authenticator {
   credentialBackedUp   Boolean
   transports           String?
 
-  user st_User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+
+  @@map("st_authenticators")
 }
