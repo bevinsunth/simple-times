@@ -61,13 +61,11 @@ export async function getEntries(
   endDate: Date
 ): Promise<TimeEntryData[]> {
   if (!startDate || !endDate) {
-    error('No start or end date provided');
     return [];
   }
 
   const userData = await getLoggedInUser();
   if (!userData) {
-    error('User not logged in');
     return [];
   }
 
@@ -89,7 +87,6 @@ export const getClientAndProjectList = async (): Promise<
 > => {
   const userData = await getLoggedInUser();
   if (!userData) {
-    error('User not logged in');
     return [];
   }
   const clients = await getClients(userData.id);
