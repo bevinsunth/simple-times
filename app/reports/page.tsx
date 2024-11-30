@@ -1,5 +1,3 @@
-'use client';
-
 import ReportGeneration from '../components/section/report-generation';
 import { Sidebar } from '../components/section/sidebar';
 
