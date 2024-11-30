@@ -3,7 +3,13 @@
 import React, { useEffect } from 'react';
 import { Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -34,6 +40,14 @@ export default function ClientProjectManager(): JSX.Element {
       <Card>
         <CardHeader>
           <CardTitle>Client and Project Manager</CardTitle>
+          <CardDescription>
+            {!clientAndProjectList ||
+            clientAndProjectList.length === 0 ||
+            !clientAndProjectList[0].projects ||
+            clientAndProjectList[0].projects.length === 0
+              ? 'Create your first client and project to start'
+              : 'Edit clients and projects.'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4">

@@ -10,6 +10,7 @@ import { useClientStore, useTimesheetStore } from '@/lib/client/store';
 import { useEffect } from 'react';
 import { TimeEntryData } from '@/lib/types';
 import SaveStatusAlert from '../save-status-alert';
+import { redirect } from 'next/navigation';
 
 const TimeSheet: React.FC = () => {
   const {
@@ -40,6 +41,16 @@ const TimeSheet: React.FC = () => {
   useEffect(() => {
     fetchClientAndProjectList();
   }, [fetchClientAndProjectList]);
+
+  //redirect to client manager if no client or project
+  useEffect(() => {
+    if (
+      clientAndProjectList.length === 0 ||
+      clientAndProjectList[0].projects.length === 0
+    ) {
+      redirect('/client-manager');
+    }
+  }, [clientAndProjectList]);
 
   const clients = clientAndProjectList.map(item => ({
     value: item.client.id ?? '',
