@@ -1,5 +1,3 @@
-'use client';
-
 import ClientManager from '../components/section/client-manager';
 import { Sidebar } from '../components/section/sidebar';
 

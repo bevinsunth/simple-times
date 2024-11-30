@@ -11,6 +11,7 @@ import {
   deleteClient,
   addProject,
   deleteProject,
+  deleteUser,
 } from '@/lib/utils/query';
 import { getLoggedInUser } from '@/lib/utils/user';
 import type {
@@ -129,4 +130,12 @@ export const addNewProject = async (project: ProjectData): Promise<Project> => {
 export const deleteExistingProject = async (id: string): Promise<void> => {
   console.log('deleteExistingProject', id);
   await deleteProject(id);
+};
+
+export const deleteCurrentUser = async (): Promise<void> => {
+  const userData = await getLoggedInUser();
+  if (!userData) {
+    return;
+  }
+  await deleteUser(userData.id);
 };

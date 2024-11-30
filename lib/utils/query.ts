@@ -107,3 +107,7 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   const user = await db.user.findUnique({ where: { email } });
   return user;
 };
+//Delete user
+export const deleteUser = async (id: string): Promise<void> => {
+  await db.user.delete({ where: { id } });
+};

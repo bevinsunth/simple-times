@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { signOut } from 'next-auth/react';
 import { getUserInitials } from '@/lib/utils';
 import { User } from '@prisma/client';
+import { deleteCurrentUser } from '@/lib/utils/operations';
 
 interface AccountOptionsDropdownProps {
   user: User;
@@ -47,7 +48,16 @@ export function AccountOptionsDropdown(
           <span>Logout</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600">
+        <DropdownMenuItem
+          className="text-red-600"
+          onClick={event => {
+            event.preventDefault();
+            deleteCurrentUser();
+            signOut({
+              callbackUrl: `${window.location.origin}/login`,
+            });
+          }}
+        >
           <Trash2 className="mr-2 size-4" />
           <span>Delete Account</span>
         </DropdownMenuItem>
