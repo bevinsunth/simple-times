@@ -1,6 +1,5 @@
 'use server';
 
-import { error } from 'console';
 import {
   upsertTimeEntries,
   deleteTimeEntry,
@@ -29,8 +28,6 @@ const generateTimeEntryId = (entry: TimeEntryData): string => {
 export const saveEntries = async (
   entries: TimeEntryData[]
 ): Promise<TimeEntryData[] | undefined> => {
-  console.log('entries', entries);
-
   const validEntries = entries.filter(entry => {
     const isValidHours =
       typeof entry.hours === 'number' && !isNaN(entry.hours) && entry.hours > 0;
@@ -46,7 +43,6 @@ export const saveEntries = async (
   }
 
   if (validEntries.length === 0) {
-    error('No valid entries to save');
     return;
   }
 
@@ -118,7 +114,6 @@ export const addNewClient = async (
 };
 
 export const deleteExistingClient = async (id: string): Promise<void> => {
-  console.log('deleteExistingClient', id);
   await deleteClient(id);
 };
 
@@ -128,7 +123,6 @@ export const addNewProject = async (project: ProjectData): Promise<Project> => {
   return newProject;
 };
 export const deleteExistingProject = async (id: string): Promise<void> => {
-  console.log('deleteExistingProject', id);
   await deleteProject(id);
 };
 

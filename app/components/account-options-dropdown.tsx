@@ -37,7 +37,6 @@ export function AccountOptionsDropdown(
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuItem
           onClick={event => {
-            console.log('clicked');
             event.preventDefault();
             signOut({
               callbackUrl: `${window.location.origin}/login`,

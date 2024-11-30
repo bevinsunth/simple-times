@@ -106,8 +106,6 @@ const TimesheetForm = ({
     }
   });
 
-  console.log('initialFormValues', initialFormValues);
-
   const form = useForm<TimesheetSchema>({
     resolver: zodResolver(timesheetSchema),
     defaultValues: initialFormValues,
@@ -115,27 +113,20 @@ const TimesheetForm = ({
   });
 
   const handleAutoSave = useDebouncedCallback(async (): Promise<void> => {
-    try {
-      const data = form.getValues();
-      console.log('data', data);
-      const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
-        dayEntries
-          .filter(entry => entry.clientId && entry.projectId && entry.hours)
-          .map(entry => ({
-            date: parseDateDDMMYYYY(date),
-            clientId: entry.clientId,
-            projectId: entry.projectId,
-            hours: parseFloat(entry.hours),
-          }))
-      );
+    const data = form.getValues();
+    const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
+      dayEntries
+        .filter(entry => entry.clientId && entry.projectId && entry.hours)
+        .map(entry => ({
+          date: parseDateDDMMYYYY(date),
+          clientId: entry.clientId,
+          projectId: entry.projectId,
+          hours: parseFloat(entry.hours),
+        }))
+    );
 
-      console.log('entries', entries);
-
-      if (entries.length > 0) {
-        await onSave(entries as TimeEntryData[]);
-      }
-    } catch (error) {
-      console.error('Failed to auto-save:', error);
+    if (entries.length > 0) {
+      await onSave(entries as TimeEntryData[]);
     }
   }, 1000); // 5 second delay
 
@@ -164,21 +155,17 @@ const TimesheetForm = ({
     dateKey: string,
     index: number
   ): Promise<void> => {
-    try {
-      const entry = form.getValues(`${dateKey}.${index}`);
-      await onDelete({
-        clientId: entry.clientId,
-        projectId: entry.projectId,
-        hours: parseFloat(entry.hours),
-        date: parseDateDDMMYYYY(dateKey),
-      } as TimeEntryData);
-      // Remove entry at specific index
-      const currentEntries = form.getValues(dateKey) || [];
-      const updatedEntries = currentEntries.filter((_, i) => i !== index);
-      form.setValue(dateKey, updatedEntries);
-    } catch (error) {
-      console.error('Failed to delete entry:', error);
-    }
+    const entry = form.getValues(`${dateKey}.${index}`);
+    await onDelete({
+      clientId: entry.clientId,
+      projectId: entry.projectId,
+      hours: parseFloat(entry.hours),
+      date: parseDateDDMMYYYY(dateKey),
+    } as TimeEntryData);
+    // Remove entry at specific index
+    const currentEntries = form.getValues(dateKey) || [];
+    const updatedEntries = currentEntries.filter((_, i) => i !== index);
+    form.setValue(dateKey, updatedEntries);
   };
 
   return (
