@@ -1,13 +1,14 @@
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Users } from 'lucide-react';
 import Link from 'next/link';
+import { getLoggedInUser } from '@/lib/utils/user';
 
 import { AccountOptionsDropdown } from '../account-options-dropdown';
 
-export function Sidebar({
+export async function Sidebar({
   className,
-}: React.HTMLAttributes<HTMLDivElement>): JSX.Element {
+}: React.HTMLAttributes<HTMLDivElement>): Promise<JSX.Element> {
+  const loggedInUser = await getLoggedInUser();
   return (
     <div className="sticky top-0 flex max-h-screen flex-col pb-12">
       <div className="grow space-y-4 py-4">
@@ -36,7 +37,7 @@ export function Sidebar({
         </div>
       </div>
       <div className="mt-auto px-3 py-2">
-        <AccountOptionsDropdown />
+        {loggedInUser && <AccountOptionsDropdown user={loggedInUser} />}
       </div>
     </div>
   );

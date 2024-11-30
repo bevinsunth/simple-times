@@ -1,5 +1,3 @@
-'use client';
-
 import TimeSheet from '../components/section/timesheet';
 import { Sidebar } from '../components/section/sidebar';
 
