@@ -1,7 +1,5 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-
 import { WeekSelector } from '../week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
@@ -10,7 +8,7 @@ import { useClientStore, useTimesheetStore } from '@/lib/client/store';
 import { useEffect } from 'react';
 import { TimeEntryData } from '@/lib/types';
 import SaveStatusAlert from '../save-status-alert';
-import { redirect } from 'next/navigation';
+import { Spinner } from '../spinner';
 
 const TimeSheet: React.FC = () => {
   const {
@@ -38,19 +36,10 @@ const TimeSheet: React.FC = () => {
     setCurrentDate(new Date());
   }, [setCurrentDate]);
 
+  //redirect to client manager if no client or project
   useEffect(() => {
     fetchClientAndProjectList();
   }, [fetchClientAndProjectList]);
-
-  //redirect to client manager if no client or project
-  useEffect(() => {
-    if (
-      clientAndProjectList.length === 0 ||
-      clientAndProjectList[0].projects.length === 0
-    ) {
-      redirect('/client-manager');
-    }
-  }, [clientAndProjectList]);
 
   const clients = clientAndProjectList.map(item => ({
     value: item.client.id ?? '',
@@ -69,7 +58,7 @@ const TimeSheet: React.FC = () => {
     <>
       <WeekSelector currentDate={currentDate} onDateChange={setCurrentDate} />
       {isLoading ? (
-        <SkeletonLoader />
+        <Spinner />
       ) : (
         <TimesheetForm
           key={currentDate.toISOString()}
@@ -83,27 +72,6 @@ const TimeSheet: React.FC = () => {
       )}
       {isSaving !== 'idle' && <SaveStatusAlert status={isSaving} />}
     </>
-  );
-};
-
-const SkeletonLoader: React.FC = () => {
-  return (
-    <div className="space-y-4">
-      {Array.from({ length: 7 }).map((_, i) => (
-        <Card key={i}>
-          <CardHeader>
-            <div className="h-6 w-1/4 rounded bg-gray-200"></div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4">
-              {Array.from({ length: 4 }).map((_, j) => (
-                <div key={j} className="h-10 rounded bg-gray-200"></div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
   );
 };
 

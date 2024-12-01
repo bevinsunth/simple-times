@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 const alertVariants = cva(
-  'fixed bottom-4 right-4 flex items-center space-x-2 rounded-full px-4 py-2 shadow-lg transition-all duration-300 ease-in-out',
+  'fixed top-5 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 rounded-full px-4 py-2 shadow-lg transition-all duration-300 ease-in-out',
   {
     variants: {
       variant: {
@@ -57,7 +57,7 @@ const SaveStatusAlert: React.FC<SaveStatusAlertProps> = ({
           variant: status,
           className,
         }),
-        'animate-in slide-in-from-bottom-2'
+        'animate-in slide-in-from-top-2'
       )}
       role="status"
       aria-live="polite"

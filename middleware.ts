@@ -40,10 +40,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: [
-    '/timesheet/:path*',
-    '/reports/:path*',
-    '/login',
-    '/client-manager',
-  ],
+  matcher: ['/dashboard/:path*', '/login'],
 };

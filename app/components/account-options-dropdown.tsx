@@ -26,8 +26,8 @@ export function AccountOptionsDropdown(
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start">
-          <Avatar>
+        <Button variant="ghost" className="w-full justify-start size-15">
+          <Avatar className="mr-2">
             <AvatarImage src={avatar} alt="User" />
           </Avatar>
           Account

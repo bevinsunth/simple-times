@@ -5,7 +5,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -112,7 +111,7 @@ const TimesheetForm = ({
     mode: 'all',
   });
 
-  const handleAutoSave = useDebouncedCallback(async (): Promise<void> => {
+  const handleSave = useDebouncedCallback(async (): Promise<void> => {
     const data = form.getValues();
     const entries = Object.entries(data).flatMap(([date, dayEntries]) =>
       dayEntries
@@ -128,28 +127,28 @@ const TimesheetForm = ({
     if (entries.length > 0) {
       await onSave(entries as TimeEntryData[]);
     }
-  }, 1000); // 5 second delay
+  });
 
-  useEffect(() => {
-    const subscription = form.watch((value, { name, type }) => {
-      if (name?.includes('.hours') && type === 'change') {
-        const [dateKey, index] = name.split('.').slice(0, 2);
-        void Promise.all([
-          form.trigger(`${dateKey}.${index}.hours`),
-          form.trigger(`${dateKey}.${index}.clientId`),
-          form.trigger(`${dateKey}.${index}.projectId`),
-        ]).then(([hoursValid, clientValid, projectValid]) => {
-          if (hoursValid && clientValid && projectValid) {
-            void handleAutoSave();
-          }
-        });
-      }
-    });
+  // useEffect(() => {
+  //   const subscription = form.watch((value, { name, type }) => {
+  //     if (name?.includes('.hours') && type === 'change') {
+  //       const [dateKey, index] = name.split('.').slice(0, 2);
+  //       void Promise.all([
+  //         form.trigger(`${dateKey}.${index}.hours`),
+  //         form.trigger(`${dateKey}.${index}.clientId`),
+  //         form.trigger(`${dateKey}.${index}.projectId`),
+  //       ]).then(([hoursValid, clientValid, projectValid]) => {
+  //         if (hoursValid && clientValid && projectValid) {
+  //           void handleAutoSave();
+  //         }
+  //       });
+  //     }
+  //   });
 
-    return (): void => {
-      subscription.unsubscribe();
-    };
-  }, [form, handleAutoSave]);
+  //   return (): void => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [form, handleAutoSave]);
 
   const handleDeleteEntry = async (
     dateKey: string,
@@ -296,9 +295,18 @@ const TimesheetForm = ({
               </Card>
             );
           })}
-          <Button className="w-full" type="submit">
-            Save Timesheet
-          </Button>
+          <div className="sticky bottom-5 left-0 w-full m-15 p-5 z-10">
+            <Button
+              className="w-full justify-center"
+              type="submit"
+              onClick={e => {
+                e.preventDefault();
+                void handleSave();
+              }}
+            >
+              Save Timesheet
+            </Button>
+          </div>
         </form>
       </Form>
     </>

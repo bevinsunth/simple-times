@@ -15,19 +15,19 @@ export async function Sidebar({
         <div className="px-3 py-2">
           <h2 className="mb-2 px-4 text-lg font-semibold">Dashboard</h2>
           <div className="flex flex-col space-y-1">
-            <Link href="/timesheet">
+            <Link href="/dashboard/timesheet">
               <Button variant="ghost">
                 <Calendar className="mr-2 size-4" />
                 Timesheet
               </Button>
             </Link>
-            <Link href="/reports">
+            <Link href="/dashboard/reports">
               <Button variant="ghost">
                 <Clock className="mr-2 size-4" />
                 Reports
               </Button>
             </Link>
-            <Link href="/client-manager">
+            <Link href="/dashboard/client-manager">
               <Button variant="ghost">
                 <Users className="mr-2 size-4" />
                 Client Manager
