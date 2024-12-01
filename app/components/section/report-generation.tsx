@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { addDays, format, eachDayOfInterval } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import { CalendarIcon, Download, Loader2 } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
@@ -26,7 +26,6 @@ import { Label } from '@/components/ui/label';
 import { pdf } from '@react-pdf/renderer';
 import TimesheetPDF from '../timesheet-pdf';
 import { getEntries, getClientAndProjectList } from '@/lib/utils/operations';
-import { getClients } from '@/lib/utils/query';
 
 export default function ReportGeneration(): JSX.Element {
   const [date, setDate] = useState<DateRange | undefined>({

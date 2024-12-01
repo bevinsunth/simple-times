@@ -7,13 +7,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogOut, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'next-auth/react';
-import { getUserInitials } from '@/lib/utils';
 import { User } from '@prisma/client';
 import { deleteCurrentUser } from '@/lib/utils/operations';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 interface AccountOptionsDropdownProps {
   user: User;
@@ -23,13 +22,13 @@ export function AccountOptionsDropdown(
   props: AccountOptionsDropdownProps
 ): JSX.Element {
   const { user } = props;
+  const avatar = user?.image ?? `https://avataaars.io`;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="w-full justify-start">
-          <Avatar className="mr-2 size-6">
-            <AvatarImage src={user?.image ?? ''} alt="User" />
-            <AvatarFallback>{getUserInitials(user?.name ?? '')}</AvatarFallback>
+          <Avatar>
+            <AvatarImage src={avatar} alt="User" />
           </Avatar>
           Account
         </Button>

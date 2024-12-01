@@ -19,7 +19,7 @@ import type {
   ProjectData,
   TimeEntryData,
 } from '@/lib/types';
-import { Project } from '@prisma/client';
+import { Project, User } from '@prisma/client';
 
 const generateTimeEntryId = (entry: TimeEntryData): string => {
   return `${entry.date.toISOString()}-${entry.clientId}-${entry.projectId}`;
@@ -129,4 +129,8 @@ export const deleteCurrentUser = async (): Promise<void> => {
     return;
   }
   await deleteUser(userData.id);
+};
+
+export const createUser = async (user: User) => {
+  await createUser(user);
 };

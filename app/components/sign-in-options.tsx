@@ -3,9 +3,10 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
-import { Github, Loader } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
 
 import { Button } from '@/components/ui/button';
+import { Loader } from 'lucide-react';
 
 export default function SignInOptions() {
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
@@ -22,9 +23,16 @@ export default function SignInOptions() {
         {isGitHubLoading ? (
           <Loader className="mr-2 size-4 animate-spin" />
         ) : (
-          <Github className="mr-2 size-4" />
-        )}{' '}
+          <FaGithub className="mr-2 size-4" />
+        )}
         Github
+      </Button>
+      <Button
+        variant="outline"
+        className="bg-inherit"
+        onClick={() => signIn('credentials', { email: 'simple@example.com' })}
+      >
+        Just here to check the features
       </Button>
     </div>
   );

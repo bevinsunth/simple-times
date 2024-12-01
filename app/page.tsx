@@ -20,7 +20,7 @@ const Home = (): JSX.Element => {
             <Clock className="text-primary size-6" />
           </div>
           <CardTitle className="text-3xl font-bold">
-            Welcome to TimeTracker
+            Welcome to SimpleTimes
           </CardTitle>
           <CardDescription className="mt-2 text-lg">
             Simple, efficient time tracking for professionals
