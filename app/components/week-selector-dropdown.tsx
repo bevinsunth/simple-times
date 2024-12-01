@@ -31,8 +31,8 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
           <SelectValue placeholder="Select a week" />
         </SelectTrigger>
         <SelectContent>
-          {Array.from({ length: 52 }, (_, i) => {
-            const date = subWeeks(new Date(), i);
+          {Array.from({ length: 21 }, (_, i) => {
+            const date = subWeeks(new Date(), 10 - i);
             return (
               <SelectItem key={i} value={format(date, 'yyyy-MM-dd')}>
                 {format(date, 'MMM d, yyyy')}
