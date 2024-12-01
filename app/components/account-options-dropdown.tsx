@@ -23,10 +23,11 @@ export function AccountOptionsDropdown(
 ): JSX.Element {
   const { user } = props;
   const avatar = user?.image ?? `https://avataaars.io`;
+  const isTestUser = user.email?.endsWith('@example.com');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start size-15">
+        <Button variant="ghost" className="size-15 w-full justify-start">
           <Avatar className="mr-2">
             <AvatarImage src={avatar} alt="User" />
           </Avatar>
@@ -45,20 +46,24 @@ export function AccountOptionsDropdown(
           <LogOut className="mr-2 size-4" />
           <span>Logout</span>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-red-600"
-          onClick={event => {
-            event.preventDefault();
-            deleteCurrentUser();
-            signOut({
-              callbackUrl: `${window.location.origin}/login`,
-            });
-          }}
-        >
-          <Trash2 className="mr-2 size-4" />
-          <span>Delete Account</span>
-        </DropdownMenuItem>
+        {!isTestUser && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={event => {
+                event.preventDefault();
+                deleteCurrentUser();
+                signOut({
+                  callbackUrl: `${window.location.origin}/login`,
+                });
+              }}
+            >
+              <Trash2 className="mr-2 size-4" />
+              <span>Delete Account</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

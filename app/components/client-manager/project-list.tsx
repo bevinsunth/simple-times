@@ -42,7 +42,7 @@ export function ProjectList({
         <div key={project.id} className="flex items-center justify-between">
           <span>{project.name}</span>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => onDeleteProject(clientId, project.id)}
           >

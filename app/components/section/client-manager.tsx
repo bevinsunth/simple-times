@@ -46,7 +46,7 @@ export default function ClientProjectManager(): JSX.Element {
             !clientAndProjectList[0].projects ||
             clientAndProjectList[0].projects.length === 0
               ? 'Create your first client and project to start'
-              : 'Edit clients and projects.'}
+              : 'Add or delete clients and projects.'}
           </CardDescription>
         </CardHeader>
         <CardContent>

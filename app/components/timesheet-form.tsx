@@ -295,7 +295,7 @@ const TimesheetForm = ({
               </Card>
             );
           })}
-          <div className="sticky bottom-5 left-0 w-full m-15 p-5 z-10">
+          <div className="m-15 sticky bottom-5 left-0 z-10 w-full p-5">
             <Button
               className="w-full justify-center"
               type="submit"
