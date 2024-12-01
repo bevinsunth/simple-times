@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebouncedCallback } from 'use-debounce';
 import { PlusCircle, Trash2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,13 +55,17 @@ interface Option {
   label: string;
 }
 
+interface ProjectOption extends Option {
+  clientId: string;
+}
+
 interface TimesheetFormProps {
   week: Date[];
   onSave: (entries: TimeEntryData[]) => Promise<void>;
   onDelete: (entry: TimeEntryData) => Promise<void>;
   initialEntries: TimeEntryData[];
   clients: Option[];
-  projects: Option[];
+  projects: ProjectOption[];
 }
 
 const TimesheetForm = ({
@@ -220,6 +224,9 @@ const TimesheetForm = ({
                             <Select
                               defaultValue={field.value}
                               onValueChange={field.onChange}
+                              disabled={
+                                !form.watch(`${dateKey}.${index}.clientId`)
+                              }
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -227,14 +234,20 @@ const TimesheetForm = ({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {projects.map(project => (
-                                  <SelectItem
-                                    key={project.value}
-                                    value={project.value}
-                                  >
-                                    {project.label}
-                                  </SelectItem>
-                                ))}
+                                {projects
+                                  .filter(
+                                    project =>
+                                      project.clientId ===
+                                      form.watch(`${dateKey}.${index}.clientId`)
+                                  )
+                                  .map(project => (
+                                    <SelectItem
+                                      key={project.value}
+                                      value={project.value}
+                                    >
+                                      {project.label}
+                                    </SelectItem>
+                                  ))}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -242,6 +255,10 @@ const TimesheetForm = ({
                         )}
                       />
                       <FormField
+                        disabled={
+                          !form.watch(`${dateKey}.${index}.clientId`) ||
+                          !form.watch(`${dateKey}.${index}.projectId`)
+                        }
                         control={form.control}
                         name={`${dateKey}.${index}.hours`}
                         render={({ field }) => (

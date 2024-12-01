@@ -43,7 +43,7 @@ const Home = (): JSX.Element => {
           </div>
 
           <div className="flex justify-center pt-4">
-            <Link href="/timesheet">
+            <Link href="/dashboard/timesheet">
               <Button size="lg" className="group">
                 Get Started
                 <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />

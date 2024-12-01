@@ -50,6 +50,7 @@ const TimeSheet: React.FC = () => {
       item.projects.map(project => ({
         value: project.id ?? '',
         label: project.name,
+        clientId: item.client.id ?? '',
       }))
     )
     .flat();
