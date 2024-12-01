@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 
 import { Button } from '@/components/ui/button';
-import { Loader } from 'lucide-react';
+import { Loader, FlaskConical } from 'lucide-react';
 
 export default function SignInOptions() {
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
@@ -53,7 +53,10 @@ export default function SignInOptions() {
         {isTestUserLoading ? (
           <Loader className="mr-2 size-4 animate-spin" />
         ) : (
-          'Log in as test user'
+          <>
+            <FlaskConical className="mr-2 size-4" />
+            Log in as Test User
+          </>
         )}
       </Button>
     </div>
