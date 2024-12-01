@@ -3,13 +3,15 @@
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaGoogle } from 'react-icons/fa';
 
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
 
 export default function SignInOptions() {
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isTestUserLoading, setIsTestUserLoading] = useState(false);
 
   return (
     <div className="grid grid-cols-1 gap-3">
@@ -29,10 +31,30 @@ export default function SignInOptions() {
       </Button>
       <Button
         variant="outline"
-        className="bg-inherit"
-        onClick={() => signIn('credentials', { email: 'simple@example.com' })}
+        onClick={() => {
+          setIsGoogleLoading(true);
+          signIn('google');
+        }}
       >
-        Just here to check the features
+        {isGoogleLoading ? (
+          <Loader className="mr-2 size-4 animate-spin" />
+        ) : (
+          <FaGoogle className="mr-2 size-4" />
+        )}
+        Google
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => {
+          setIsTestUserLoading(true);
+          signIn('credentials', { email: 'simple@example.com' });
+        }}
+      >
+        {isTestUserLoading ? (
+          <Loader className="mr-2 size-4 animate-spin" />
+        ) : (
+          'Log in as test user'
+        )}
       </Button>
     </div>
   );

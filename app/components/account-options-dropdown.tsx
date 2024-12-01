@@ -22,7 +22,8 @@ export function AccountOptionsDropdown(
   props: AccountOptionsDropdownProps
 ): JSX.Element {
   const { user } = props;
-  const avatar = user?.image ?? `https://avataaars.io`;
+  const avatar = user && user.image ? user.image : `https://avataaars.io`;
+  console.log(user);
   const isTestUser = user.email?.endsWith('@example.com');
   return (
     <DropdownMenu>

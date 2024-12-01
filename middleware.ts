@@ -10,7 +10,7 @@ export default withAuth(
 
     if (isAuthPage) {
       if (isAuth) {
-        return NextResponse.redirect(new URL('/timesheet', req.url));
+        return NextResponse.redirect(new URL('/dashboard/timesheet', req.url));
       }
 
       return null;
