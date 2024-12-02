@@ -72,6 +72,7 @@ const TimesheetPDF = ({
   endDate,
 }: TimesheetPDFProps): JSX.Element => {
   return (
+    const sortedDate = 
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>
