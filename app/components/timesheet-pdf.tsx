@@ -71,8 +71,10 @@ const TimesheetPDF = ({
   startDate,
   endDate,
 }: TimesheetPDFProps): JSX.Element => {
+  const sortedData = data.sort((a, b) => {
+    return a.date.getTime() - b.date.getTime();
+  });
   return (
-    const sortedDate = 
     <Document>
       <Page size="A4" style={styles.page}>
         <Text style={styles.title}>
@@ -100,7 +102,7 @@ const TimesheetPDF = ({
             </View>
           </View>
           {/* Table Body */}
-          {data.map((entry, index) => {
+          {sortedData.map((entry, index) => {
             return (
               <View key={index} style={styles.tableRow}>
                 <View style={[styles.tableCell, styles.dateCell]}>
