@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Calendar, File, Users } from 'lucide-react';
