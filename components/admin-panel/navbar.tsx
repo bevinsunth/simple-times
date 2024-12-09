@@ -1,6 +1,9 @@
+'use client';
+
 import { ModeToggle } from '@/components/mode-toggle';
 import { UserNav } from '@/components/admin-panel/user-nav';
 import { SheetMenu } from '@/components/admin-panel/sheet-menu';
+import { SessionProvider } from 'next-auth/react';
 
 interface NavbarProps {
   title: string;
@@ -16,7 +19,9 @@ export function Navbar({ title }: NavbarProps) {
         </div>
         <div className="flex flex-1 items-center justify-end">
           <ModeToggle />
-          <UserNav />
+          <SessionProvider>
+            <UserNav />
+          </SessionProvider>
         </div>
       </div>
     </header>

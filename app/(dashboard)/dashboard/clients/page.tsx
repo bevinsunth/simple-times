@@ -1,6 +1,5 @@
 import ClientManager from '@/app/components/section/client-manager';
 import { ContentLayout } from '@/components/admin-panel/content-layout';
-import { Link } from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,6 +10,7 @@ import {
 } from '@/components/ui/breadcrumb';
 
 import type React from 'react';
+import { SessionProvider } from 'next-auth/react';
 
 const Home = (): JSX.Element => {
   return (
