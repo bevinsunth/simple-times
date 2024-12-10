@@ -27,7 +27,7 @@ const Home = (): JSX.Element => {
           </BreadcrumbList>
         </Breadcrumb>
       </ContentLayout>
-      <div className="p-3">
+      <div className="mx-auto max-w-screen-lg p-3">
         <TimeSheet />
       </div>
     </>
