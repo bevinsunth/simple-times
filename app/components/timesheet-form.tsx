@@ -184,7 +184,7 @@ const TimesheetForm = ({
                 </CardHeader>
                 <CardContent>
                   {form.watch(dateKey)?.map((_, index) => (
-                    <div key={index} className="mb-4 grid grid-cols-4 gap-4">
+                    <div key={index} className="flex flex-row justify-between">
                       <FormField
                         control={form.control}
                         name={`${dateKey}.${index}.clientId`}
