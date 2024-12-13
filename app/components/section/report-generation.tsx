@@ -110,87 +110,89 @@ export default function ReportGeneration(): JSX.Element {
   };
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
-      <CardHeader>
-        <CardTitle>Generate Report</CardTitle>
-        <CardDescription>
-          Select a period and generate a PDF report
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-col space-y-2">
-          <Label htmlFor="date-range">Date Range</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date-range"
-                variant={'outline'}
-                className={cn(
-                  'w-full justify-start text-left font-normal',
-                  !date && 'text-muted-foreground'
-                )}
-                aria-label="Select date range"
-              >
-                <CalendarIcon className="mr-2 size-4" />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, 'LLL dd, y')} -{' '}
-                      {format(date.to, 'LLL dd, y')}
-                    </>
+    <div className="p-4">
+      <Card className="mx-auto w-full">
+        <CardHeader>
+          <CardTitle>Generate Report</CardTitle>
+          <CardDescription>
+            Select a period and generate a PDF report
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col space-y-2">
+            <Label htmlFor="date-range">Date Range</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date-range"
+                  variant={'outline'}
+                  className={cn(
+                    'w-full justify-start text-left font-normal',
+                    !date && 'text-muted-foreground'
+                  )}
+                  aria-label="Select date range"
+                >
+                  <CalendarIcon className="mr-2 size-4" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, 'LLL dd, y')} -{' '}
+                        {format(date.to, 'LLL dd, y')}
+                      </>
+                    ) : (
+                      format(date.from, 'LLL dd, y')
+                    )
                   ) : (
-                    format(date.from, 'LLL dd, y')
-                  )
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={setDate}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <Button
-          className="w-full"
-          onClick={() => void handleDownloadReport()}
-          disabled={isLoading || !date?.from || !date?.to}
-          aria-live="polite"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              Generating Report
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 size-4" />
-              Download Report
-            </>
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <Button
+            className="w-full"
+            onClick={() => void handleDownloadReport()}
+            disabled={isLoading || !date?.from || !date?.to}
+            aria-live="polite"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Generating Report
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 size-4" />
+                Download Report
+              </>
+            )}
+          </Button>
+        </CardContent>
+        <CardFooter className="flex flex-col items-start">
+          {error && (
+            <Alert variant="destructive" className="mb-4 w-full" role="alert">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-        </Button>
-      </CardContent>
-      <CardFooter className="flex flex-col items-start">
-        {error && (
-          <Alert variant="destructive" className="mb-4 w-full" role="alert">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {report && (
-          <Alert className="mb-4 w-full" role="status">
-            <AlertTitle>Report Generated</AlertTitle>
-            <AlertDescription>{report}</AlertDescription>
-          </Alert>
-        )}
-      </CardFooter>
-    </Card>
+          {report && (
+            <Alert className="mb-4 w-full" role="status">
+              <AlertTitle>Report Generated</AlertTitle>
+              <AlertDescription>{report}</AlertDescription>
+            </Alert>
+          )}
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
