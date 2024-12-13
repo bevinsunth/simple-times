@@ -9,7 +9,6 @@ import { useEffect } from 'react';
 import { TimeEntryData } from '@/lib/types';
 import SaveStatusAlert from '../save-status-alert';
 import { Spinner } from '../spinner';
-
 const TimeSheet: React.FC = () => {
   const {
     currentDate,

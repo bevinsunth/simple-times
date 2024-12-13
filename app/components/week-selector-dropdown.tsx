@@ -19,9 +19,10 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   onDateChange,
 }) => {
   return (
-    <div className="mb-4 flex items-center justify-between">
+    <div className="mb-4 flex items-center justify-center gap-4">
       <Button onClick={() => onDateChange(subWeeks(currentDate, 1))}>
-        Previous Week
+        <span className="hidden md:inline">Previous Week</span>
+        <span className="inline md:hidden">&lt;</span>
       </Button>
       <Select
         value={format(currentDate, 'yyyy-MM-dd')}
@@ -42,7 +43,8 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
         </SelectContent>
       </Select>
       <Button onClick={() => onDateChange(addWeeks(currentDate, 1))}>
-        Next Week
+        <span className="hidden md:inline">Next Week</span>
+        <span className="inline md:hidden">&gt;</span>
       </Button>
     </div>
   );
