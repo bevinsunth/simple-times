@@ -8,7 +8,7 @@ import { useClientStore, useTimesheetStore } from '@/lib/client/store';
 import { useEffect } from 'react';
 import { TimeEntryData } from '@/lib/types';
 import SaveStatusAlert from '../save-status-alert';
-import { Spinner } from '../spinner';
+import { Loader2 } from 'lucide-react';
 const TimeSheet: React.FC = () => {
   const {
     currentDate,
@@ -58,7 +58,9 @@ const TimeSheet: React.FC = () => {
     <>
       <WeekSelector currentDate={currentDate} onDateChange={setCurrentDate} />
       {isLoading ? (
-        <Spinner />
+        <div className="flex size-full items-center justify-center">
+          <Loader2 className="my-60 size-12 animate-spin" />
+        </div>
       ) : (
         <TimesheetForm
           key={currentDate.toISOString()}

@@ -133,27 +133,6 @@ const TimesheetForm = ({
     }
   });
 
-  // useEffect(() => {
-  //   const subscription = form.watch((value, { name, type }) => {
-  //     if (name?.includes('.hours') && type === 'change') {
-  //       const [dateKey, index] = name.split('.').slice(0, 2);
-  //       void Promise.all([
-  //         form.trigger(`${dateKey}.${index}.hours`),
-  //         form.trigger(`${dateKey}.${index}.clientId`),
-  //         form.trigger(`${dateKey}.${index}.projectId`),
-  //       ]).then(([hoursValid, clientValid, projectValid]) => {
-  //         if (hoursValid && clientValid && projectValid) {
-  //           void handleAutoSave();
-  //         }
-  //       });
-  //     }
-  //   });
-
-  //   return (): void => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [form, handleAutoSave]);
-
   const handleDeleteEntry = async (
     dateKey: string,
     index: number

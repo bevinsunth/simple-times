@@ -19,7 +19,7 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   onDateChange,
 }) => {
   return (
-    <div className="mb-4 flex items-center justify-center gap-4">
+    <div className="from-background sticky top-5 z-10 mb-4 flex items-center justify-center gap-4 p-2">
       <Button onClick={() => onDateChange(subWeeks(currentDate, 1))}>
         <span className="hidden md:inline">Previous Week</span>
         <span className="inline md:hidden">&lt;</span>
