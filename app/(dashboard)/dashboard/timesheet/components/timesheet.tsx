@@ -17,7 +17,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -32,6 +31,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Notebook } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+
+export interface WeekDay {
+  day: string;
+  date: string;
+}
 
 const hoursEntrySchema = z.object({
   hours: z
@@ -66,7 +70,7 @@ const projects = [
 // Define the type for form values
 export type FormValues = z.infer<typeof schema>;
 
-function Timesheet({ weekDays }: { weekDays: string[] }) {
+function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -119,7 +123,7 @@ function Timesheet({ weekDays }: { weekDays: string[] }) {
                 <TableHead>Clients</TableHead>
                 <TableHead>Projects</TableHead>
                 {weekDays.map(day => (
-                  <TableHead key={day}>{day}</TableHead>
+                  <TableHead key={day.date}>{day.day}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -193,7 +197,7 @@ function Timesheet({ weekDays }: { weekDays: string[] }) {
                   </TableCell>
 
                   {weekDays.map((day, dayIndex) => (
-                    <TableCell key={day}>
+                    <TableCell key={day.date}>
                       <div className="flex flex-row gap-1">
                         <FormField
                           control={form.control}
@@ -236,7 +240,9 @@ function Timesheet({ weekDays }: { weekDays: string[] }) {
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[425px]">
                                   <DialogHeader>
-                                    <DialogTitle>Notes for {day}</DialogTitle>
+                                    <DialogTitle>
+                                      Notes for {day.date}
+                                    </DialogTitle>
                                   </DialogHeader>
                                   <Textarea
                                     value={field.value}

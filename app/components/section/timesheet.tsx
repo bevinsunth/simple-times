@@ -1,6 +1,6 @@
 'use client';
 
-import { WeekSelector } from '../week-selector-dropdown';
+import { WeekSelector } from '../../(dashboard)/dashboard/timesheet/components/week-selector-dropdown';
 import { TimesheetForm } from '../timesheet-form';
 
 import type React from 'react';

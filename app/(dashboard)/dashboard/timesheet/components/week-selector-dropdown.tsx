@@ -14,7 +14,7 @@ interface WeekSelectorProps {
   onDateChange: (date: Date) => void;
 }
 
-const WeekSelector: React.FC<WeekSelectorProps> = ({
+const WeekSelectorDropdown: React.FC<WeekSelectorProps> = ({
   currentDate,
   onDateChange,
 }) => {
@@ -50,4 +50,4 @@ const WeekSelector: React.FC<WeekSelectorProps> = ({
   );
 };
 
-export { WeekSelector };
+export { WeekSelectorDropdown };

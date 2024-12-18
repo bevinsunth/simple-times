@@ -1,3 +1,5 @@
+'use client';
+
 import { ContentLayout } from '@/components/admin-panel/content-layout';
 import {
   Breadcrumb,
@@ -7,12 +9,28 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import Timesheet from './components/timesheet';
+import Timesheet, { WeekDay } from './components/timesheet';
 import type React from 'react';
+import { useState } from 'react';
+import { WeekSelectorDropdown } from './components/week-selector-dropdown';
+import { dateToLocaleString, getDatesOfWeek } from '@/lib/utils/date';
 
-const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const getWeekDays = (date: Date): WeekDay[] => {
+  return getDatesOfWeek(date).map(day => ({
+    day: dateToLocaleString(day),
+    date: day.toISOString(),
+  }));
+};
 
 const Home = (): JSX.Element => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [weekDays, setWeekDays] = useState<WeekDay[]>(getWeekDays(currentDate));
+
+  const handleDateChange = (date: Date) => {
+    setCurrentDate(date);
+    setWeekDays(getWeekDays(date));
+  };
+
   return (
     <>
       <ContentLayout title="Timesheet">
@@ -29,6 +47,10 @@ const Home = (): JSX.Element => {
         </Breadcrumb>
       </ContentLayout>
       <div className="mx-auto max-w-screen-lg p-3">
+        <WeekSelectorDropdown
+          currentDate={currentDate}
+          onDateChange={handleDateChange}
+        />
         <Timesheet weekDays={weekDays} />
       </div>
     </>
