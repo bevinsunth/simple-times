@@ -31,6 +31,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Notebook } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { useEffect } from 'react';
 
 export interface WeekDay {
   day: string;
@@ -57,14 +58,14 @@ const schema = z.object({
 });
 
 const clients = [
-  { key: 'client1', value: 'Client 1' },
-  { key: 'client2', value: 'Client 2' },
-  { key: 'client3', value: 'Client 3' },
+  { value: 'client1', label: 'Client 1' },
+  { value: 'client2', label: 'Client 2' },
+  { value: 'client3', label: 'Client 3' },
 ];
 const projects = [
-  { key: 'project1', value: 'Project 1' },
-  { key: 'project2', value: 'Project 2' },
-  { key: 'project3', value: 'Project 3' },
+  { value: 'project1', label: 'Project 1' },
+  { value: 'project2', label: 'Project 2' },
+  { value: 'project3', label: 'Project 3' },
 ];
 
 // Define the type for form values
@@ -82,6 +83,7 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
         },
       ],
     },
+    mode: 'onChange',
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -89,29 +91,15 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
     name: 'rows',
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: FormValues) => {
     console.log(data);
   };
 
-  const handleSelectChange = (index: number, value: string) => {
-    console.log(index, value);
-  };
+  const formValues = form.watch();
 
-  const handleHoursChange = (
-    index: number,
-    dayIndex: number,
-    value: string
-  ) => {
-    console.log(index, dayIndex, value);
-  };
-
-  const handleNotesChange = (
-    index: number,
-    dayIndex: number,
-    value: string
-  ) => {
-    console.log(index, dayIndex, value);
-  };
+  useEffect(() => {
+    console.log(formValues);
+  }, [formValues]);
 
   return (
     <FormProvider {...form}>
@@ -137,10 +125,8 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                       render={({ field }) => (
                         <FormItem>
                           <Select
-                            onValueChange={value =>
-                              handleSelectChange(index, value)
-                            }
                             defaultValue={field.value}
+                            onValueChange={field.onChange}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -149,11 +135,8 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                             </FormControl>
                             <SelectContent>
                               {clients.map(option => (
-                                <SelectItem
-                                  key={option.key}
-                                  value={option.value}
-                                >
-                                  {option.value}
+                                <SelectItem value={option.value}>
+                                  {option.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -170,10 +153,8 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                       render={({ field }) => (
                         <FormItem>
                           <Select
-                            onValueChange={value =>
-                              handleSelectChange(index, value)
-                            }
                             defaultValue={field.value}
+                            onValueChange={field.onChange}
                           >
                             <FormControl>
                               <SelectTrigger>
@@ -182,11 +163,8 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                             </FormControl>
                             <SelectContent>
                               {projects.map(option => (
-                                <SelectItem
-                                  key={option.key}
-                                  value={option.value}
-                                >
-                                  {option.value}
+                                <SelectItem value={option.value}>
+                                  {option.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -207,16 +185,9 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                               <FormControl>
                                 <Input
                                   type="number"
-                                  value={field.value}
-                                  onChange={e =>
-                                    handleHoursChange(
-                                      index,
-                                      dayIndex,
-                                      e.target.value
-                                    )
-                                  }
                                   className="h-8 w-full"
                                   placeholder="Enter hours"
+                                  {...field}
                                 />
                               </FormControl>
                             </FormItem>
@@ -245,16 +216,9 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                                     </DialogTitle>
                                   </DialogHeader>
                                   <Textarea
-                                    value={field.value}
-                                    onChange={e =>
-                                      handleNotesChange(
-                                        index,
-                                        dayIndex,
-                                        e.target.value
-                                      )
-                                    }
                                     placeholder="Enter notes"
                                     className="min-h-[100px]"
+                                    {...field}
                                   />
                                 </DialogContent>
                               </Dialog>
