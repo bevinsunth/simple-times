@@ -1,4 +1,3 @@
-import TimeSheet from '@/app/components/section/timesheet';
 import { ContentLayout } from '@/components/admin-panel/content-layout';
 import {
   Breadcrumb,
@@ -8,8 +7,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-
+import Timesheet from './components/timesheet';
 import type React from 'react';
+
+const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
 const Home = (): JSX.Element => {
   return (
@@ -28,7 +29,7 @@ const Home = (): JSX.Element => {
         </Breadcrumb>
       </ContentLayout>
       <div className="mx-auto max-w-screen-lg p-3">
-        <TimeSheet />
+        <Timesheet weekDays={weekDays} />
       </div>
     </>
   );
