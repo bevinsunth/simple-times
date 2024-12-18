@@ -13,12 +13,16 @@ import Timesheet, { WeekDay } from './components/timesheet';
 import type React from 'react';
 import { useState } from 'react';
 import { WeekSelectorDropdown } from './components/week-selector-dropdown';
-import { dateToLocaleString, getDatesOfWeek } from '@/lib/utils/date';
+import {
+  dateToDayString,
+  dateToLocaleString,
+  getDatesOfWeek,
+} from '@/lib/utils/date';
 
 const getWeekDays = (date: Date): WeekDay[] => {
-  return getDatesOfWeek(date).map(day => ({
-    day: dateToLocaleString(day),
-    date: day.toISOString(),
+  return getDatesOfWeek(date).map(date => ({
+    day: dateToDayString(date),
+    date: dateToLocaleString(date),
   }));
 };
 
@@ -46,7 +50,7 @@ const Home = (): JSX.Element => {
           </BreadcrumbList>
         </Breadcrumb>
       </ContentLayout>
-      <div className="mx-auto max-w-screen-lg p-3">
+      <div className="mx-auto w-full p-3">
         <WeekSelectorDropdown
           currentDate={currentDate}
           onDateChange={handleDateChange}

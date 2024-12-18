@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { FormControl, FormItem } from '@/components/ui/form';
+import { FormControl, FormItem, FormMessage } from '@/components/ui/form';
 import { FormField } from '@/components/ui/form';
 import {
   Select,
@@ -92,14 +92,15 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
   });
 
   const onSubmit = (data: FormValues) => {
-    console.log(data);
+    console.log('data', data);
   };
 
   const formValues = form.watch();
 
   useEffect(() => {
-    console.log(formValues);
-  }, [formValues]);
+    console.log('formValues', formValues);
+    console.log('errors', form.formState.errors);
+  }, [formValues, form.formState.errors]);
 
   return (
     <FormProvider {...form}>
@@ -108,75 +109,78 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Clients</TableHead>
-                <TableHead>Projects</TableHead>
+                <TableHead className="text-left">Clients</TableHead>
+                <TableHead className="text-left">Projects</TableHead>
                 {weekDays.map(day => (
-                  <TableHead key={day.date}>{day.day}</TableHead>
+                  <TableHead className="text-left">{day.day}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {fields.map((field, index) => (
-                <TableRow>
-                  <TableCell>
-                    <FormField
-                      control={form.control}
-                      name={`rows.${index}.client`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            defaultValue={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Client" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {clients.map(option => (
-                                <SelectItem value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
+                <TableRow key={field.id}>
+                  <TableCell colSpan={1}>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name={`rows.${index}.client`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select
+                              defaultValue={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select Client" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {clients.map(option => (
+                                  <SelectItem value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </TableCell>
 
-                  <TableCell>
-                    <FormField
-                      control={form.control}
-                      name={`rows.${index}.project`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            defaultValue={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select Client" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {projects.map(option => (
-                                <SelectItem value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
+                  <TableCell colSpan={1}>
+                    <div className="min-w-15">
+                      <FormField
+                        control={form.control}
+                        name={`rows.${index}.project`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select
+                              defaultValue={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select Client" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {projects.map(option => (
+                                  <SelectItem value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </TableCell>
-
                   {weekDays.map((day, dayIndex) => (
-                    <TableCell key={day.date}>
-                      <div className="flex flex-row gap-1">
+                    <TableCell key={dayIndex} colSpan={1}>
+                      <div className="flex min-w-20 flex-row p-1">
                         <FormField
                           control={form.control}
                           name={`rows.${index}.timeEntries.${dayIndex}.hours`}
@@ -185,15 +189,15 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                               <FormControl>
                                 <Input
                                   type="number"
-                                  className="h-8 w-full"
+                                  className="w-full"
                                   placeholder="Enter hours"
                                   {...field}
                                 />
                               </FormControl>
+                              <FormMessage />
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name={`rows.${index}.timeEntries.${dayIndex}.notes`}
@@ -201,12 +205,8 @@ function Timesheet({ weekDays }: { weekDays: WeekDay[] }) {
                             <FormItem>
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="size-8 shrink-0"
-                                  >
-                                    <Notebook className="size-4" />
+                                  <Button variant="ghost" className="size-10">
+                                    <Notebook />
                                   </Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[425px]">
